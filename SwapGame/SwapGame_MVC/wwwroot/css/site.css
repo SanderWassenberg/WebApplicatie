@@ -1,0 +1,366 @@
+* {
+    padding: 0;
+    margin: 0
+}
+
+.hide {
+    display: none !important;
+}
+
+:root {
+    --primary-color: #302AE6;
+    --secondary-color: #536390;
+    --font-color: #424242;
+    --bg-color: #b9d0e4;
+    --bg-color-secondary: #e0ebf5;
+    --bg-color-secondary-detail: #95b5d4;
+    --bg-textbox: #fff;
+    --heading-color: #292922;
+    --switch-bg-off: #777;
+    --switch-bg-on: #82d882;
+    --focus-overlay-color: #00206999;
+    --positive-button-bg: #c3f8c3;
+    --positive-button-bg-hover: #7aea7a;
+    --positive-button-border: #8ebe8e;
+    --negative-button-bg: #fcc;
+    --negative-button-bg-hover: #d6a1a1;
+    --negative-button-border: #d6a1a1;
+    --neutral-button-bg: #E3F2FF;
+    --neutral-button-bg-hover: #B1D3EF;
+    --neutral-button-border: #87B1D7;
+    --button-text: #000000C2;
+    --slider-height: 34px;
+    --slider-width: 60px;
+    --slider-margin: 3px;
+    --sidebar-width: min(300px, 90vw);
+    font-family: sans-serif;
+    color: var(--font-color);
+    background-color: var(--bg-color);
+}
+
+    :root[data-theme="dark"] {
+        --primary-color: #9A97F3;
+        --secondary-color: #818cab;
+        --font-color: #e1e1ff;
+        --bg-color: #161625;
+        --bg-color-secondary: #312b40;
+        --bg-color-secondary-detail: #575265;
+        --bg-textbox: #151527;
+        --heading-color: #818cab;
+        --positive-button-bg: #5a7f5a;
+        --positive-button-bg-hover: #78a878;
+        --positive-button-border: #6baf6b;
+        --negative-button-bg: #765555;
+        --negative-button-bg-hover: #a87070;
+        --negative-button-border: #a87070;
+        --neutral-button-bg: #393955;
+        --neutral-button-bg-hover: #51517c;
+        --neutral-button-border: #4f4f79;
+        --button-text: #FFFFFFC2;
+        --focus-overlay-color: #0A031AC2;
+    }
+
+a {
+    color: var(--secondary-color);
+}
+
+.container {
+    /* whole page, except for popups */
+    position: absolute;
+    bottom: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    overflow: hidden;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 40px 0 30px;
+}
+
+.game-area {
+    /* main area to the right of the sidebar */
+
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    max-height: 100%;
+}
+
+.sidebar-button {
+    font-size: 30px;
+    cursor: pointer;
+    background: unset;
+    border: unset;
+    color: var(--secondary-color);
+    padding: 0 7px 3px;
+    position: relative;
+    z-index: 1;
+}
+
+:root[data-sidebar="shown"] .sidebar-button {
+    transform: translateX(-40px);
+}
+
+.sidebar {
+    width: var(--sidebar-width);
+    max-width: var(--sidebar-width);
+    background: var(--bg-color-secondary);
+    outline-style: solid;
+    outline-color: var(--bg-color-secondary-detail);
+    outline-width: 3px;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+#sidebar-profile .user-name {
+    font-size: 30px;
+}
+
+.sidebar-inner {
+    margin: 15px 15px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#sidebar-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+    #sidebar-options > * {
+        display: flex;
+        justify-content: space-between;
+    }
+
+#profile-pic {
+    width: 100px;
+}
+
+.focus-overlay {
+    display: none;
+    margin-left: 2px; /* sidebar-outline-width -1px */
+    height: 100%;
+    flex: 1;
+    z-index: 1;
+    background-image: linear-gradient(-90deg, rgba(0,0,0,0), var(--focus-overlay-color));
+}
+
+.collapse-vertical {
+    max-width: 0;
+    overflow: hidden;
+}
+
+.center-content {
+    display: flex;
+    justify-content: center;
+}
+
+.width-limits-the-height {
+    width: 100%; /* this width */
+    aspect-ratio: 1/1; /* match height to the width */
+    max-height: 100%; /* except if height exceeds parent height */
+    /* cannot make class that works the other way round,
+    max-height overrides aspect ratio, max-width does not.*/
+}
+
+.square-from-height {
+    height: 100%;
+    aspect-ratio: 1/1;
+}
+
+.login-area {
+    width: min(80%, 400px);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    align-self: center;
+    background-color: var(--bg-color-secondary);
+    padding: 10px;
+}
+
+.signup-area {
+    width: min(80%, 400px);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    align-self: center;
+    background-color: var(--bg-color-secondary);
+    padding: 10px;
+}
+
+input[type="text"], input[type="password"] {
+    background: var(--bg-textbox);
+    color: var(--font-color);
+    padding: 5px;
+    border: solid 1px var(--bg-color-secondary-detail);
+}
+
+form.basic {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+form label {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="submit"] {
+    padding: 5px;
+    border: solid 1px var(--neutral-button-border);
+    background-color: var(--neutral-button-bg);
+    color: var(--button-text);
+}
+
+#login-redirect-to-signup, #signup-redirect-to-login {
+    margin-top: 15px;
+}
+
+
+#board {
+    flex-grow: 1;
+    position: relative;
+    margin: 15px;
+    display: grid;
+    grid-gap: max(.5%, 0.8px);
+}
+
+.tile {
+    background-color: var(--bg-color-secondary);
+}
+
+.switch {
+    display: block;
+    position: relative;
+    width: var(--slider-width);
+    height: var(--slider-height);
+}
+
+.switch input {
+    visibility: hidden;
+}
+
+.switch .slider {
+    border-radius: 1000px;
+    background-color: var(--switch-bg-off);
+    position: absolute;
+    /* makes the slider fill the label */
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    cursor: pointer;
+    transition: .1s;
+}
+
+.switch .slider::before {
+    border-radius: 1000px;
+    background-color: white;
+    content: "";
+    width: calc(var(--slider-height) - 2*var(--slider-margin));
+    height: calc(var(--slider-height) - 2*var(--slider-margin));
+    position: absolute;
+    bottom: var(--slider-margin);
+    left: var(--slider-margin);
+    transition: inherit;
+}
+
+.switch input:checked + .slider {
+    background-color: var(--switch-bg-on);
+}
+
+.switch input:checked + .slider::before {
+    left: calc(var(--slider-width) - var(--slider-height) + var(--slider-margin));
+}
+
+#popups {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+.gdpr-popup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+    max-width: 700px;
+    border: 1px solid var(--secondary-color);
+    background-color: var(--bg-color-secondary);
+    margin: 2px 10px;
+}
+
+.gdpr-popup__options {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap-reverse;
+    justify-content: center;
+}
+
+.button {
+    border-style: none;
+    border-style: solid;
+    border-width: 1px;
+    flex: 1;
+    padding: 5px;
+    background-color: var(--neutral-button-bg);
+    border-color: var(--neutral-button-border);
+    color: var(--button-text);
+    cursor: pointer;
+}
+
+.button:hover {
+    background-color: var(--neutral-button-bg-hover);
+    transition-duration: 0s;
+}
+
+.button.positive {
+    background-color: var(--positive-button-bg);
+    border-color: var(--positive-button-border);
+}
+
+.button.positive:hover {
+    background-color: var(--positive-button-bg-hover);
+}
+
+@media (max-aspect-ratio: 1) {
+
+    :root[data-sidebar="shown"] .focus-overlay {
+        display: block;
+    }
+
+    .sidebar-container {
+        z-index: 1;
+    }
+
+    main {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        top: 0;
+        right: 0;
+    }
+}
+
+
+@media (max-aspect-ratio: 100/177) {
+    :root {
+        --sidebar-width: calc(100vw - 20px);
+    }
+}

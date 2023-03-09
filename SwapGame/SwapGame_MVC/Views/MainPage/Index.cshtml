@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "SwapGame";
+}
+
+<div class="container">
+
+    <div class="sidebar-container" style="display: flex;">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-inner">
+                <div id="sidebar-profile">
+                    <img class="profile-pic" src="~/img/1.png">
+                    <div class="user-name">UserName</div>
+                </div>
+
+                <div id="sidebar-options">
+                    <div>Dark Theme
+                        <label id="theme_switch" class="switch">
+                            <input type="checkbox">
+                            <div class="slider"></div>
+                        </label>
+                    </div>
+                    <div><div>one</div><div>two</div></div>
+                    <p>Item 1</p>
+                    <p>Item 1</p>
+                    <p>Item 1</p>
+                    <p>Item 1</p>
+                </div>
+
+            </div>
+        </nav>
+        <div style="width:0;position:relative;z-index: 1;">
+            <button id="sidebar-button" class="sidebar-button">&#9776;</button>
+        </div>
+    </div>
+
+    <div class="focus-overlay"></div>
+
+    <main>
+
+        <section class="login-area">
+            <h1>Login</h1>
+            <form class="basic">
+                <div><label>Name
+                    <input type="text" required>
+                </label></div>
+
+                <div><label>Password
+                    <input type="password" required>
+                </label></div>
+
+                <div><label>
+                    <input class="button" type="submit" value="Login">
+                </label></div>
+            </form>
+
+            <a href="javascript:" id="login-redirect-to-signup">Don't have an account?</a>
+        </section>
+
+        <section class="signup-area hide">
+            <h1>Sign up</h1>
+            <form class="basic">
+                <div><label>Name
+                    <input type="text" required>
+                </label></div>
+
+                <div><label>Password
+                    <input type="password" required>
+                </label></div>
+
+                <div><label>Confirm Password
+                    <input type="password" required>
+                </label></div>
+
+                <div><label>
+                    <input class="button" type="submit" value="Create account">
+                </label></div>
+            </form>
+
+            <a href="javascript:" id="signup-redirect-to-login">Already have an account?</a>
+        </section>
+
+        <div id="game" class="game-area hide">
+            <div class="width-limits-the-height center-content">
+                <div class="square-from-height center-content">
+                    <div id="board"></div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+</div>
+
+<!-- Cookies-->
+<div id="popups">
+    <section class="gdpr-popup hide">
+        <p>This website doesn't use cookies yet, but it probably will in the future. You can already accept them now, even though that doesn't do anything yet.</p>
+
+        <div class="gdpr-popup__options">
+            <button class="button reject">No, and don't bother me again.</button>
+            <button class="button postpone">Maybe later</button>
+            <button class="button positive accept">Yes, of course!</button>
+        </div>
+    </section>
+</div>
