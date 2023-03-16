@@ -5,7 +5,12 @@ VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwapGame_MVC", "SwapGame_MVC\SwapGame_MVC.csproj", "{943BE2C2-2093-4469-8ACD-B5A5CDFC942F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SwapGame_API", "SwapGame_API\SwapGame_API.csproj", "{D44CE003-3B76-42B6-A7D6-111CB991C756}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SwapGame_API", "SwapGame_API\SwapGame_API.csproj", "{D44CE003-3B76-42B6-A7D6-111CB991C756}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CBD1B0CE-3ED9-45F5-840A-C96ACA722EC7}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

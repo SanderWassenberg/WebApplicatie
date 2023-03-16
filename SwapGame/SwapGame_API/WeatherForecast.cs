@@ -1,9 +1,7 @@
 using System;
 
-namespace SwapGame_API
-{
-    public class WeatherForecast
-    {
+namespace SwapGame_API {
+    public class WeatherForecast {
         public DateOnly Date { get; set; }
 
         public int TemperatureC { get; set; }
@@ -17,22 +15,19 @@ namespace SwapGame_API
 
         private static readonly string[] summaries = new[]
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", 
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild",
             "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        public static WeatherForecast[] Get(HttpContext httpContext)
-        {
+        public static WeatherForecast[] Get(HttpContext httpContext) {
             const int num_forecasts = 5;
 
             var forecast = new WeatherForecast[num_forecasts];
-            for (int i = 0; i < num_forecasts; i++)
-            {
-                forecast[i] = new WeatherForecast()
-                {
-                    Date         = DateOnly.FromDateTime(DateTime.Now.AddDays(i)),
+            for (int i = 0; i < num_forecasts; i++) {
+                forecast[i] = new WeatherForecast() {
+                    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(i)),
                     TemperatureC = Random.Shared.Next(-20, 55),
-                    Summary      = summaries[Random.Shared.Next(summaries.Length)],
+                    Summary = summaries[Random.Shared.Next(summaries.Length)],
                 };
             }
             return forecast;
