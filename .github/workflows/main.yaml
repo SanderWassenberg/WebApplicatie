@@ -1,6 +1,11 @@
 name: GitHub Actions Demo
 run-name: ${{ github.actor }} is testing out GitHub Actions 🚀
 on: [push]
+env:
+  SERVER_IP: eenserverofzoweetikveelwatdefuckszetikhierneer
+  USERNAME: WeetIkVeel
+  REMOTE_DIRECTORY: remote_dir_or_whatever/
+
 jobs:
   Explore-GitHub-Actions:
     runs-on: ubuntu-latest
@@ -16,3 +21,12 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+      
+      - name: Copy files to server
+        uses: appleboy/scp-action@main
+        with:
+          host: ${{ env.SERVER_IP }}
+          username: ${{ env.USERNAME }}
+          key: ${{ secrets.SERVER_KEY }}
+          source: publish/
+          target: ${{ env.REMOTE_DIRECTORY }}
