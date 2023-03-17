@@ -13,7 +13,7 @@ import {SwapGame, Piece, PieceType} from "./game.js"
 	setTimeout(() => {
 		const sheet = new CSSStyleSheet();
 		sheet.insertRule("*{transition: .2s }");
-		sheet.insertRule("#board *{transition: unset }");
+		sheet.insertRule("swapgame-board *{transition: unset }");
 		document.adoptedStyleSheets = [sheet];
 	}, 1)
 
@@ -43,11 +43,11 @@ import {SwapGame, Piece, PieceType} from "./game.js"
 		if (show) {
 			button.innerHTML = "&#10006;" // cross
 			sidebar.classList.remove("collapse-vertical");
-			document.documentElement.setAttribute("data-sidebar", "shown");
+			document.documentElement.dataset.sidebar = "shown";
 		} else {
 			button.innerHTML = "&#9776;" // burger
 			sidebar.classList.add("collapse-vertical");
-			document.documentElement.setAttribute("data-sidebar", "hidden");
+			document.documentElement.dataset.sidebar = "hidden";
 		}
 	}
 }

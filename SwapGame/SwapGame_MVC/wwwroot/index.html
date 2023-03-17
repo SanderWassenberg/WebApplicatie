@@ -12,7 +12,7 @@
 <body>
 
     <!-- templates/stuff to be copied to other parts of the page -->
-    <div display="none">
+    <div class="hide">
         <svg>
             <!-- When copying from piece.svg be sure to remove stroke="whatever" -->
             <circle id="piece_circle" fill="none" stroke-width="15" stroke-miterlimit="10" cx="50" cy="50" r="42"/>
@@ -27,9 +27,6 @@
             </g>
         </svg>
     </div>
-    <svg>
-        <use xlink:href="images/piece.svg"></use>
-    </svg>
 
     <div class="container">
 
@@ -42,16 +39,15 @@
                     </div>
 
                     <div id="sidebar-options">
+                        <button data-redirect="game">Game</button>
+                        <button data-redirect="login">Login</button>
+                        <button data-redirect="signup">Signup</button>
                         <div><b>Dark Theme</b>
                             <label id="theme_switch" class="switch">
                                 <input type="checkbox">
                                 <div class="slider"></div>
                             </label>
                         </div>
-                        <button data-redirect="game">Game</button>
-                        <button data-redirect="login">Login</button>
-                        <button data-redirect="signup">Signup</button>
-                        <button>Item 1</button>
                     </div>
 
                 </div>
