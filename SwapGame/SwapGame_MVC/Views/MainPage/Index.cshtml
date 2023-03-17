@@ -2,18 +2,39 @@
     ViewData["Title"] = "SwapGame";
 }
 
+<!-- templates/stuff to be copied to other parts of the page -->
+<div display="none">
+    <svg>
+        <!-- When copying from piece.svg be sure to remove stroke="whatever" -->
+        <circle id="piece_circle" fill="none" stroke-width="15" stroke-miterlimit="10" cx="50" cy="50" r="42" />
+        <g id="piece_plus" fill="none">
+            <line display="inline" stroke-width="15" stroke-miterlimit="10" x1="100" y1="50" x2="0" y2="50" />
+            <line display="inline" stroke-width="15" stroke-miterlimit="10" x1="50" y1="0" x2="50" y2="100" />
+        </g>
+        <g id="piece_cross" fill="none">
+            <line display="inline" stroke-width="15" stroke-miterlimit="10" x1="85.355" y1="85.355" x2="14.645" y2="14.645" />
+
+            <line display="inline" stroke-width="15" stroke-miterlimit="10" x1="85.355" y1="14.645" x2="14.645" y2="85.355" />
+        </g>
+    </svg>
+</div>
+<svg>
+    <use xlink:href="images/piece.svg"></use>
+</svg>
+
 <div class="container">
 
     <div class="sidebar-container" style="display: flex;">
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-inner">
                 <div id="sidebar-profile">
-                    <img class="profile-pic" src="~/img/1.png">
+                    <img class="profile-pic" src="img/1.png">
                     <div class="user-name">UserName</div>
                 </div>
 
                 <div id="sidebar-options">
-                    <div>Dark Theme
+                    <div>
+                        Dark Theme
                         <label id="theme_switch" class="switch">
                             <input type="checkbox">
                             <div class="slider"></div>
@@ -37,20 +58,28 @@
 
     <main>
 
-        <section class="login-area">
+        <section class="login-area hide">
             <h1>Login</h1>
             <form class="basic">
-                <div><label>Name
-                    <input type="text" required>
-                </label></div>
+                <div>
+                    <label>
+                        Name
+                        <input type="text" required>
+                    </label>
+                </div>
 
-                <div><label>Password
-                    <input type="password" required>
-                </label></div>
+                <div>
+                    <label>
+                        Password
+                        <input type="password" required>
+                    </label>
+                </div>
 
-                <div><label>
-                    <input class="button" type="submit" value="Login">
-                </label></div>
+                <div>
+                    <label>
+                        <input class="button" type="submit" class="button" value="Login">
+                    </label>
+                </div>
             </form>
 
             <a href="javascript:" id="login-redirect-to-signup">Don't have an account?</a>
@@ -59,33 +88,38 @@
         <section class="signup-area hide">
             <h1>Sign up</h1>
             <form class="basic">
-                <div><label>Name
-                    <input type="text" required>
-                </label></div>
+                <div>
+                    <label>
+                        Name
+                        <input type="text" required>
+                    </label>
+                </div>
 
-                <div><label>Password
-                    <input type="password" required>
-                </label></div>
+                <div>
+                    <label>
+                        Password
+                        <input type="password" required>
+                    </label>
+                </div>
 
-                <div><label>Confirm Password
-                    <input type="password" required>
-                </label></div>
+                <div>
+                    <label>
+                        Confirm Password
+                        <input type="password" required>
+                    </label>
+                </div>
 
-                <div><label>
-                    <input class="button" type="submit" value="Create account">
-                </label></div>
+                <div>
+                    <label>
+                        <input class="button" type="submit" class="button" value="Create account">
+                    </label>
+                </div>
             </form>
 
             <a href="javascript:" id="signup-redirect-to-login">Already have an account?</a>
         </section>
 
-        <div id="game" class="game-area hide">
-            <div class="width-limits-the-height center-content">
-                <div class="square-from-height center-content">
-                    <div id="board"></div>
-                </div>
-            </div>
-        </div>
+        <swapgame-board></swapgame-board>
 
     </main>
 

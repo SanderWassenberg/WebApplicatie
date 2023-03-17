@@ -4,7 +4,7 @@ namespace SwapGame_MVC {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews();
+            //builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
@@ -18,13 +18,13 @@ namespace SwapGame_MVC {
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
-            app.UseRouting();
+            //app.UseRouting();
 
             app.UseAuthorization();
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=MainPage}/{action=Index}/{id?}");
+            //app.MapControllerRoute(
+            //    name: "default",
+            //    pattern: "{controller=MainPage}/{action=Index}/{id?}");
 
             app.Run();
         }

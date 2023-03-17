@@ -40,7 +40,6 @@ namespace SwapGame_API
                 }
             );
                 
-
             app.MapGet("api/weatherforecast", WeatherForecast.Get);
 
             app.Run();
