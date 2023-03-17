@@ -1,5 +1,6 @@
 import {SwapGame_VisualsManager} from "./visualsmanager.js"
 import {SwapGame, Piece, PieceType} from "./game.js"
+import {api_post} from "./util.js"
 
 { // THEME gedoe
 	const theme_switch = document.querySelector('#theme_switch input[type="checkbox"]');
@@ -119,3 +120,12 @@ game.set(0, 2, Piece.opponent(PieceType.Circle));
 // init visuals
 const visuals = document.querySelector("swapgame-board")
 visuals.set_game(game)
+
+
+
+
+
+document.querySelector("#test_button").addEventListener("click", async e => {
+	const response = await api_post('/test', {Name: "CoolName", Num:56});
+	console.log(response)
+})
