@@ -42,17 +42,16 @@
                     </div>
 
                     <div id="sidebar-options">
-                        <div>Dark Theme
+                        <div><b>Dark Theme</b>
                             <label id="theme_switch" class="switch">
                                 <input type="checkbox">
                                 <div class="slider"></div>
                             </label>
                         </div>
-                        <div><div>one</div><div>two</div></div>
-                        <p>Item 1</p>
-                        <p>Item 1</p>
-                        <p>Item 1</p>
-                        <p>Item 1</p>
+                        <button data-redirect="game">Game</button>
+                        <button data-redirect="login">Login</button>
+                        <button data-redirect="signup">Signup</button>
+                        <button>Item 1</button>
                     </div>
 
                 </div>
@@ -82,10 +81,11 @@
                     </label></div>
                 </form>
 
-                <a href="javascript:" id="login-redirect-to-signup">Don't have an account?</a>
+                <a href="javascript:" data-redirect="signup" class="link-below-form">Don't have an account?</a>
+                
             </section>
 
-            <section class="signup-area hide">
+            <section class="signup-area">
                 <h1>Sign up</h1>
                 <form class="basic">  
                     <div><label>Name
@@ -105,10 +105,10 @@
                     </label></div>
                 </form>
 
-                <a href="javascript:" id="signup-redirect-to-login">Already have an account?</a>
+                <a href="javascript:" data-redirect="login" class="link-below-form">Already have an account?</a>
             </section>
 
-            <swapgame-board></swapgame-board>
+            <swapgame-board class="hide"></swapgame-board>
 
         </main>
 

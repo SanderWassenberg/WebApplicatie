@@ -52,21 +52,38 @@ import {SwapGame, Piece, PieceType} from "./game.js"
 	}
 }
 
-{ // login/signup gedoe
+{ // redirection gedoe
 	const login_elem = document.querySelector(".login-area")
 	const signup_elem = document.querySelector(".signup-area")
-	const redirect_to_login = document.getElementById("signup-redirect-to-login")
-	const redirect_to_signup = document.getElementById("login-redirect-to-signup")
+	const game_elem = document.querySelector("swapgame-board")
+	const main = document.querySelector("main");
 
-	redirect_to_login.addEventListener("click", e=>{
-		login_elem.classList.remove("hide")
-		signup_elem.classList.add("hide")
-	})
-	
-	redirect_to_signup.addEventListener("click", e=>{
-		signup_elem.classList.remove("hide")
-		login_elem.classList.add("hide")
-	})
+	document.querySelectorAll("[data-redirect]")
+		.forEach(elem => elem.addEventListener("click", e => redirect(elem.dataset.redirect)))
+
+
+	function redirect(where) {
+		switch(where) {
+			case "login": 
+				switch_main_content(login_elem)
+			break;
+			case "signup": 
+				switch_main_content(signup_elem);
+			break;
+			case "game": 
+				switch_main_content(game_elem);
+			break;
+		}
+	}
+
+	function switch_main_content(elem_to_show) {
+		for (const elem of main.children) {
+			if (elem === elem_to_show)
+				elem.classList.remove("hide")
+			else
+				elem.classList.add("hide")
+		}
+	}
 }
 
 { // GDPR gedoe

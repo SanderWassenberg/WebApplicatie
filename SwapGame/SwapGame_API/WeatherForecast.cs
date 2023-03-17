@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace SwapGame_API {
     public class WeatherForecast {
@@ -10,16 +11,17 @@ namespace SwapGame_API {
 
         public string? Summary { get; set; }
 
-
-
-
         private static readonly string[] summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild",
             "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        public static WeatherForecast[] Get(HttpContext httpContext) {
+
+        public static WeatherForecast[] Get(HttpContext httpContext, SwapGame_DbContext context) {
+
+            Debug.WriteLine($"item in db: {context.Users.Where(u => u.Id == 1).First().Name}");
+
             const int num_forecasts = 5;
 
             var forecast = new WeatherForecast[num_forecasts];

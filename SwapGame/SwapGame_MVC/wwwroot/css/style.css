@@ -25,6 +25,8 @@
     --neutral-button-border: #87B1D7;
     --button-text: #000000C2;
 
+    --transparant_highlight: rgba(255,255,255,0.5);
+
     --slider-height: 34px;
     --slider-width: 60px;
     --slider-margin: 3px;
@@ -60,6 +62,8 @@
     --neutral-button-border: #4f4f79;
     --button-text: #FFFFFFC2;
     --focus-overlay-color: #0A031AC2;
+
+    --transparant_highlight: rgba(255,255,255,0.1);
 }
 
 a {
@@ -102,7 +106,9 @@ swapgame-board {
     position: relative;
     z-index: 1;
 }
-
+.sidebar-button:hover {
+    background: var(--transparant_highlight);
+}
 :root[data-sidebar="shown"] .sidebar-button {
     transform: translatex(-40px);
 }
@@ -136,6 +142,7 @@ swapgame-board {
 #sidebar-options>*{
     display:flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 #profile-pic {
@@ -219,7 +226,7 @@ input[type="submit"] {
     color: var(--button-text);
 }
 
-#login-redirect-to-signup, #signup-redirect-to-login {
+.link-below-form {
     margin-top: 15px;
 }
 
@@ -325,7 +332,7 @@ swapgame-tile.highlighted {
     justify-content: center;
 }
 
-.button {
+button, .button {
     border-style: none;
     border-style: solid;
     border-width: 1px;
@@ -336,7 +343,7 @@ swapgame-tile.highlighted {
     color: var(--button-text);
     cursor: pointer;
 }
-.button:hover {
+button:hover, .button:hover {
     background-color: var(--neutral-button-bg-hover);
     transition-duration: 0s;
 }

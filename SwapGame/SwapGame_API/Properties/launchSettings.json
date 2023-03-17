@@ -44,6 +44,5 @@
       "applicationUrl": "http://localhost:7282",
       "sslPort": 44347
     }
-  },
-  "Extreem_Veilige_DB_pls_no_hack": "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=SwapGameDB;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+  }
 }

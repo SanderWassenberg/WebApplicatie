@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace SwapGame_API
 {
@@ -9,10 +10,8 @@ namespace SwapGame_API
             // Add services to the container.
             builder.Services.AddAuthorization();
 
-            {
-                var connection_string = builder.Configuration.GetConnectionString("Extreem_Veilige_DB_pls_no_hack");
-                builder.Services.AddDbContext<SwapGame_DbContext>(options => options.UseSqlServer(connection_string));
-            }
+            var connection_string = builder.Configuration.GetConnectionString("Extreem_Veilige_DB_pls_no_hack");
+            builder.Services.AddDbContext<SwapGame_DbContext>(options => options.UseSqlServer(connection_string));
 
             var app = builder.Build();
 
@@ -39,10 +38,24 @@ namespace SwapGame_API
                     "https://localhost:7036",
                 }
             );
-                
+            
+            // De functie die je naar MapGet of MapPost etc. paast kan zelf aangeven wat hij wil hebben van de dependency injection.
+            // Stop een SwapGame_DbContext in zijn paramaterlijst, boem database access.
+            // Stop een WhateverModel in zijn parameters, dan probeert hij de Post request body of Get query args om te zetten naar zo'n object. 
             app.MapGet("api/weatherforecast", WeatherForecast.Get);
+
+            app.MapPost("api/test", (Thingy t) => {
+                Debug.WriteLine("received a thingy!");
+                Debug.WriteLine($"thingy: {t.Name}, {t.Num}, {t.PropDieIkNietMeegeef?.ToString() ?? "null"}");
+            });
 
             app.Run();
         }
+    }
+
+    class Thingy {
+        public string? Name { get; set; }
+        public int? Num { get; set; }
+        public int? PropDieIkNietMeegeef { get; set; }
     }
 }
