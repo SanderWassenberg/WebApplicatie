@@ -15,15 +15,17 @@ namespace SwapGame_API
             builder.Services.AddAuthorization();
 
             var connection_string = builder.Configuration.GetConnectionString("Extreem_Veilige_DB_pls_no_hack");
-            builder.Services.AddDbContext<SwapGame_DbContext>(options => options.UseSqlServer(connection_string));
+            builder.Services.AddDbContext<SwapGame_DbContext>(options => { 
+                options.UseSqlServer(connection_string);
+            });
 
 
             // Gekut met CORS:
             // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0#enable-cors-with-endpoint-routing
             builder.Services.AddCors(options => {
                 options.AddPolicy(MyCorsSettings, policy => {
-                    policy.WithOrigins("https://localhost:7036");
-                    policy.WithHeaders("Content-Type");
+                    policy.WithOrigins("https://localhost:7036"); // allowed origins
+                    policy.WithHeaders("Content-Type"); // allowed headers.
                 });
             });
 
@@ -56,15 +58,14 @@ namespace SwapGame_API
                 .RequireCors(MyCorsSettings);
 
             app.MapPost("api/test", (HttpContext context, Thingy t, ILoggerFactory loggerFactory) => {
-                var logger = loggerFactory.CreateLogger("api/test - logger");
+                var logger = loggerFactory.CreateLogger("api/test");
 
-                logger.LogInformation($"method: {context.Request.Method}");
-
-                logger.LogInformation("received a thingy!");
-                logger.LogInformation($"thingy: {t.Name}, {t.Num}, {t.PropDieIkNietMeegeef?.ToString() ?? "null"}");
+                logger.LogInformation("thingy: {}, {}, {}", t.Name, t.Num, t.PropDieIkNietMeegeef);
             }).RequireCors(MyCorsSettings);
 
-            app.UsePathBase("/index.html");
+            app.MapGet("api/list_users", (SwapGame_DbContext context) => {
+                return context.Users.AsEnumerable();
+            }).RequireCors(MyCorsSettings);
 
             app.Run();
         }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SwapGame_API;
 
@@ -10,9 +11,11 @@ using SwapGame_API;
 namespace SwapGame_API.Migrations
 {
     [DbContext(typeof(SwapGame_DbContext))]
-    partial class SwapGame_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20230321132718_seeding_and_attributes")]
+    partial class seeding_and_attributes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

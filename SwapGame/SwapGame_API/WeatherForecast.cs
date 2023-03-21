@@ -18,9 +18,7 @@ namespace SwapGame_API {
         };
 
 
-        public static WeatherForecast[] Get(HttpContext httpContext, SwapGame_DbContext context) {
-
-            Debug.WriteLine($"item in db: {context.Users.Where(u => u.Id == 1).First().Name}");
+        public static WeatherForecast[] Get(HttpContext httpContext) {
 
             const int num_forecasts = 5;
 
