@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SwapGame_API;
 
@@ -10,9 +11,11 @@ using SwapGame_API;
 namespace SwapGame_API.Migrations
 {
     [DbContext(typeof(SwapGame_DbContext))]
-    partial class SwapGame_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20230322110200_added_User_HashedPassword")]
+    partial class added_User_HashedPassword
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

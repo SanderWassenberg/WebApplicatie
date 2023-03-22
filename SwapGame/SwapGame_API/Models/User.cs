@@ -7,5 +7,6 @@ namespace SwapGame_API.Models {
 
         // [Range] works like 0..2, the min and max value are INCLUSIVE.
         [Range(0,2)] public int ProfilePic { get; set; } // fixed number referring to one of a few default images.
+        [Required]   public string HashedPassword { get; set; }
     }
 }

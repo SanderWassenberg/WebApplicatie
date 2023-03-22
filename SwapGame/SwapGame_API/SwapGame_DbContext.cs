@@ -13,6 +13,7 @@ namespace SwapGame_API {
                 new User() {
                     Id = 1,
                     Name = "allereerste_gebruiker",
+                    HashedPassword = "AQAAAAIAAYagAAAAEBZCtMd/03Zx7M+OUNNZqiGkTqH2SySNZYh/eLLDKov5u0p3ewSPvVsGaO4f6vCD/w==", // pw = "kek"
                 }
             );
         }
