@@ -77,6 +77,10 @@ namespace SwapGame_API
 
             var app = builder.Build();
 
+            if (!app.Environment.IsDevelopment()) {
+                app.UseExceptionHandler("/api/error");
+            }
+
             app.UseHttpsRedirection();
             
             app.UseCors();
@@ -104,6 +108,9 @@ namespace SwapGame_API
                 WeatherForecast.Get
             ).RequireCors(MyCorsSettings);
 
+            app.MapGet("api/error", () => "er was een error"
+            ).RequireCors(MyCorsSettings);
+
             app.MapPost("api/test", (HttpContext context, Thingy t, ILoggerFactory loggerFactory) => {
                 var logger = loggerFactory.CreateLogger("api/test");
 
@@ -113,6 +120,7 @@ namespace SwapGame_API
             app.MapGet("api/only_for_admins", [Authorize(Roles = "Administrator")] (SwapGame_DbContext context, HttpContext http_context) => {
                 return "Dit is alleen voor admins";
             }).RequireCors(MyCorsSettings);
+
             app.MapGet("api/only_with_jwt", [Authorize] (SwapGame_DbContext context, HttpContext http_context) => {
                 return "dit kan je alleen zien met een jwt token";
             }).RequireCors(MyCorsSettings);
