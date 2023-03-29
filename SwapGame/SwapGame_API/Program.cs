@@ -110,8 +110,11 @@ namespace SwapGame_API
                 logger.LogInformation("thingy: {}, {}, {}", t.Name, t.Num, t.PropDieIkNietMeegeef);
             }).RequireCors(MyCorsSettings);
 
-            app.MapGet("api/list_users", [Authorize(Roles = "Administrator")] (SwapGame_DbContext context, HttpContext http_context) => {
-                return context.Users.AsEnumerable();
+            app.MapGet("api/only_for_admins", [Authorize(Roles = "Administrator")] (SwapGame_DbContext context, HttpContext http_context) => {
+                return "Dit is alleen voor admins";
+            }).RequireCors(MyCorsSettings);
+            app.MapGet("api/only_with_jwt", [Authorize] (SwapGame_DbContext context, HttpContext http_context) => {
+                return "dit kan je alleen zien met een jwt token";
             }).RequireCors(MyCorsSettings);
 
             app.MapPost("api/request_token", [AllowAnonymous] async (LoginData login,
