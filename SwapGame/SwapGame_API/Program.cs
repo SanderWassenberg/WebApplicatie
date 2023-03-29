@@ -1,12 +1,15 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SwapGame_API.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 
@@ -61,15 +64,16 @@ namespace SwapGame_API
                 var key      = builder.Configuration["Jwt:Key"];
 
                 o.TokenValidationParameters = new TokenValidationParameters {
-                    ValidateIssuer           = true,
-                    ValidateAudience         = true,
-                    ValidateLifetime         = false,
+                    ValidateIssuer = true,
+                    ValidIssuer    = issuer,
+
+                    ValidateAudience = true,
+                    ValidAudience    = audience,
+
                     ValidateIssuerSigningKey = true,
+                    IssuerSigningKey         = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)),
 
-                    ValidIssuer   = issuer,
-                    ValidAudience = audience,
-
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key))
+                    ValidateLifetime = false,
                 };
             });
             builder.Services.AddAuthorization();
@@ -77,9 +81,11 @@ namespace SwapGame_API
 
             var app = builder.Build();
 
-            if (!app.Environment.IsDevelopment()) {
-                app.UseExceptionHandler("/api/error");
-            }
+            app.UseExceptionHandler(new ExceptionHandlerOptions {
+                ExceptionHandler = async http_context => {
+                    await http_context.Response.WriteAsJsonAsync("server broke :(");
+                }
+            });
 
             app.UseHttpsRedirection();
             
@@ -98,86 +104,64 @@ namespace SwapGame_API
                     new Header("X-Frame-Options",           "DENY"),
                 }
             );
-            
 
+            var api = app.MapGroup("api").RequireCors(MyCorsSettings);
+            api.MapGet (nameof(admins_only),   admins_only);
+            api.MapGet (nameof(jwt_only),      jwt_only);
+            api.MapGet (nameof(exception),     exception);
+            api.MapPost(nameof(signup),        signup);
+            api.MapPost(nameof(request_token), request_token);
 
-            // De functie die je naar MapGet of MapPost etc. paast kan zelf aangeven wat hij wil hebben van de dependency injection.
-            // Stop een SwapGame_DbContext in zijn paramaterlijst, boem database access.
-            // Stop een WhateverModel in zijn parameters, dan probeert hij de Post request body of Get query args om te zetten naar zo'n object. 
-            app.MapGet("api/weatherforecast", 
-                WeatherForecast.Get
-            ).RequireCors(MyCorsSettings);
+            app.Run();
+        }
 
-            app.MapGet("api/error", () => "er was een error"
-            ).RequireCors(MyCorsSettings);
+        [Authorize(Roles = "Administrator")]
+        static string admins_only() => "Dit is alleen voor admins";
 
-            app.MapPost("api/test", (HttpContext context, Thingy t, ILoggerFactory loggerFactory) => {
-                var logger = loggerFactory.CreateLogger("api/test");
+        [Authorize] 
+        static string jwt_only() => "dit kan je alleen zien met een jwt token";
 
-                logger.LogInformation("thingy: {}, {}, {}", t.Name, t.Num, t.PropDieIkNietMeegeef);
-            }).RequireCors(MyCorsSettings);
+        [AllowAnonymous]
+        static string exception() {
+            throw new Exception("oepsiepoepsie, in deze exception staat gevoelige informatie owo");
+            return "zou je niet moeten zien omdat deze endpoint eerst een exception gooit";
+        }
 
-            app.MapGet("api/only_for_admins", [Authorize(Roles = "Administrator")] (SwapGame_DbContext context, HttpContext http_context) => {
-                return "Dit is alleen voor admins";
-            }).RequireCors(MyCorsSettings);
-
-            app.MapGet("api/only_with_jwt", [Authorize] (SwapGame_DbContext context, HttpContext http_context) => {
-                return "dit kan je alleen zien met een jwt token";
-            }).RequireCors(MyCorsSettings);
-
-            app.MapPost("api/request_token", [AllowAnonymous] async (LoginData login,
+        [AllowAnonymous]
+        static async Task<IResult> request_token(
+            LoginData login,
             HttpContext http_context,
             SwapGame_DbContext db_context,
             //ILoggerFactory lf,
             UserManager<IdentityUser> user_manager,
-            ConfigurationManager config) => {
-                //var logger = lf.CreateLogger("request_token");
+            ConfigurationManager config)  
+        {
+            //var logger = lf.CreateLogger("request_token");
 
-                var login_succes = await SG_Util.Login(user_manager, login);
+            var login_succes = await SG_Util.Login(user_manager, login);
 
-                if (!login_succes) 
-                    return Results.Unauthorized();
+            if (!login_succes) 
+                return Results.Unauthorized();
 
-                var stringToken = SG_Util.BuildJwtToken(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"], login.Name);
+            var stringToken = SG_Util.BuildJwtToken(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"], login.Name);
 
-                return Results.Ok(stringToken);
-            }).RequireCors(MyCorsSettings); ;
-
-            app.MapGet("api/hash_password", (string pw) => {
-                return SG_Util.HashPassword(pw);
-            }).RequireCors(MyCorsSettings);
-
-            app.MapGet("api/verify_password", (string hash, string pw, ILoggerFactory f) => {
-                var l = f.CreateLogger("verify password"); // cringe factory pattern
-                l.LogInformation("the hash is `{}`", hash);
-                return SG_Util.VerifyPassword(pw, hash) ? "true" : "false";
-            }).RequireCors(MyCorsSettings);
-
-            app.MapPost("api/signup", [AllowAnonymous] async (
-                SignupData signup, 
-                UserManager<IdentityUser> user_manager) => {
-                var identityUser = new IdentityUser(signup.Name) {
-                    //Email = signup.Name + "@fake_email.com" // stupid bs Identity crap requires you to fill in an email suck my nuts
-                };
-
-                var result = await user_manager.CreateAsync(identityUser, signup.Password);
-
-                return result.Succeeded
-                    ? Results.Ok()
-                    : Results.BadRequest(result.Errors);
-            })
-                .RequireCors(MyCorsSettings);
-            ;
-
-            app.Run();
+            return Results.Ok(stringToken);
         }
-    }
 
+        [AllowAnonymous]
+        static async Task<IResult> signup(
+            SignupData signup,
+            UserManager<IdentityUser> user_manager)
+        {
+            if (!signup.complete()) return Results.BadRequest("incomplete signup data");
 
+            var identityUser = new IdentityUser(signup.Name);
 
-    class Thingy {
-        public string? Name { get; set; }
-        public int? Num { get; set; }
-        public int? PropDieIkNietMeegeef { get; set; }
+var result = await user_manager.CreateAsync(identityUser, signup.Password);
+
+            return result.Succeeded
+                ? Results.Ok()
+                : Results.BadRequest(result.Errors);
+        }
     }
 }

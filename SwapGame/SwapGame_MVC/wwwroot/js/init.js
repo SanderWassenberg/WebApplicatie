@@ -1,6 +1,35 @@
 import {SwapGame_VisualsManager} from "./visualsmanager.js" // required for attaching the game to the visuals.
 import {SwapGame, Piece, PieceType} from "./game.js"
-import {api_post, formdata_obj, update_list} from "./util.js"
+import {api_post, set_ul_content} from "./util.js"
+
+
+class Page {
+
+	static redirect(where) {
+
+		switch(where) {
+			case "login": 
+				switch_main_content(login_elem)
+			break;
+			case "signup": 
+				switch_main_content(signup_elem);
+			break;
+			case "game": 
+				switch_main_content(game_elem);
+			break;
+			default: console.error("unknown redirect target", where)
+		}
+
+		function switch_main_content(elem_to_show) {
+			for (const elem of main.children) {
+				if (elem === elem_to_show)
+					elem.classList.remove("hide")
+				else
+					elem.classList.add("hide")
+			}
+		}
+	}
+}
 
 { // THEME gedoe
 	const theme_switch = document.querySelector('#theme_switch input[type="checkbox"]');
@@ -53,40 +82,16 @@ import {api_post, formdata_obj, update_list} from "./util.js"
 	}
 }
 
-// redirection gedoe
-const login_elem = document.querySelector(".login-area")
-const signup_elem = document.querySelector(".signup-area")
-const game_elem = document.querySelector("swapgame-board")
-const main = document.querySelector("main");
+{
+	// redirection gedoe
+	const login_elem = document.querySelector(".login-area")
+	const signup_elem = document.querySelector(".signup-area")
+	const game_elem = document.querySelector("swapgame-board")
+	const main = document.querySelector("main");
 
-document.querySelectorAll("[data-redirect]")
-	.forEach(elem => elem.addEventListener("click", e => redirect(elem.dataset.redirect)))
-
-
-function redirect(where) {
-	switch(where) {
-		case "login": 
-			switch_main_content(login_elem)
-		break;
-		case "signup": 
-			switch_main_content(signup_elem);
-		break;
-		case "game": 
-			switch_main_content(game_elem);
-		break;
-		default: console.error("unknown redirect target", where)
-	}
+	document.querySelectorAll("[data-redirect]")
+		.forEach(elem => elem.addEventListener("click", e => Page.redirect(elem.dataset.redirect)))
 }
-
-function switch_main_content(elem_to_show) {
-	for (const elem of main.children) {
-		if (elem === elem_to_show)
-			elem.classList.remove("hide")
-		else
-			elem.classList.add("hide")
-	}
-}
-
 
 { // GDPR gedoe
 	const gdpr = document.querySelector(".gdpr-popup");
@@ -132,48 +137,42 @@ document.querySelector("#test_button").addEventListener("click", async e => {
 })
 
 {
-	const form = document.querySelector("#signup-form");
+	const form   = document.querySelector("#signup-form");
 	const error_list = form.querySelector(".signup-area__errors")
-	const submit = form.querySelector("input[type='submit']")
-	
-	const update = (e)=>{
-		if (e.key === "Enter") return;
-		const data = formdata_obj(form);
-		if (data.Password !== data.ConfirmPassword) {
-			update_list(error_list, "Passwords do not match.")
-			submit.disabled = true;
-		} else {
-			update_list(error_list)
-			submit.disabled = false;
-		}
-	}
-	form.querySelector("[name='Password']").addEventListener("keyup", update)
-	form.querySelector("[name='ConfirmPassword']").addEventListener("keyup", update)
 
 	form.addEventListener("submit", async e => {
 		e.preventDefault();
-		e.stopImmediatePropagation();
 
-		const data = formdata_obj(form);
+		const data = new FormData(form);
 
-		if (data.Password !== data.ConfirmPassword) return;
+		const ok = data.get("Password") === data.get("ConfirmPassword")
 
-		delete data.ConfirmPassword // do not send this, remove it from the object.
+		// seems weird but important to still call with undefined, to empty the list
+		set_ul_content(error_list, ok ? undefined : "Passwords do not match.") 
 
+		if (!ok) return;
+
+		data.delete("ConfirmPassword") // do not send this
 		const response = await api_post('/signup', data);
 
 		if (response.ok) {
-			update_list(error_list)
+			Page.redirect("login")
 			return
 		}
 		
-		try {
-			const obj = await response.json()
-			update_list(error_list, obj.map(o => o.description))
-			if (obj.length === 0 )redirect("login")
-		} catch (err) {
-			console.log("json parse error:", err)
-			update_list(error_list, ["Something went wrong when parsing the response from the server", err])
-		}
+		const response_body = await response.text();
+		const errors = (()=>{
+			if (response.status === 400) try {
+				return JSON.parse(response_body).map(o => o.description);
+			} catch {
+				return response_body;
+			}
+			
+			if (response.status >= 500) return response_body; 
+			
+			return `Unexpected server response status ${response.status}`; 
+		})()
+
+		set_ul_content(error_list, errors)
 	})
 }

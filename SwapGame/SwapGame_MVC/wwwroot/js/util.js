@@ -36,41 +36,35 @@ const api_path = (location.hostname === "localhost" ? "https://localhost:7110" :
 
 console.log("using API path", api_path)
 
-const api_post = async (path, object) => fetch(api_path + path, {
+const api_post = async (path, data) => fetch(api_path + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(object)
+    body: JSON.stringify((data instanceof FormData) ? Object.fromEntries(data) : data),
 });
 
-const formdata_obj = form => {
-    const object = {};
-    (new FormData(form)).forEach((value, key) => object[key] = value);
-    return object;
-}
-
-function update_list(ul, list) {
+function set_ul_content(ul, item_or_arr) {
     remove_all_children(ul)
-    
-    if (list === undefined || list === null) {
-        ul.classList.add("hide")
-        return;
+    if (item_or_arr) {
+        if (item_or_arr instanceof Array) {
+            for (const item of item_or_arr) {
+                const li = document.createElement("li")
+                li.innerText = item;
+                ul.append(li)
+            }
+        } else {
+            const li = document.createElement("li")
+            li.innerText = item_or_arr;
+            ul.append(li)
+        }
     }
-
-    if (list instanceof Array === false) {
-        list = [list]
-    } else if (list.length === 0) {
-        ul.classList.add("hide") 
-        return;
+    hide_if_empty(ul)
+}
+function hide_if_empty(ul) {
+    if (ul.childElementCount > 0) {
+        ul.classList.remove("hide")
+    } else {
+        ul.classList.add("hide")    
     }
-    
-    ul.classList.remove("hide")
-
-    for (const item of list) {
-        const li = document.createElement("li")
-        li.innerText = item;
-        ul.append(li)
-    }
-
 }
 
-export { Template, Array2D, remove_all_children, api_path, api_post, formdata_obj, update_list }
+export { Template, Array2D, remove_all_children, api_path, api_post, set_ul_content}

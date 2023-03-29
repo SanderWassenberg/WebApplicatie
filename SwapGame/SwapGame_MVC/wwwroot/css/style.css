@@ -355,6 +355,10 @@ button:hover:not([disabled=""]), .button:hover:not([disabled=""]) {
     transition-duration: 0s;
     cursor: pointer;
 }
+button[disabled=""], .button[disabled=""]{
+    opacity: 40%;
+    cursor: unset;
+}
 .button.positive {
     background-color: var(--positive-button-bg);
     border-color: var(--positive-button-border);

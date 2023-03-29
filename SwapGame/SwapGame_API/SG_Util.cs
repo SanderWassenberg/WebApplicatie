@@ -7,15 +7,6 @@ using System.Text;
 
 namespace SwapGame_API {
     public static class SG_Util {
-        // cringe Microsoft stupid bs why tf does this need to be a generic class implementing an interface when it could have just been two static methods
-        private static PasswordHasher<object> hasher = new PasswordHasher<object>();
-
-        public static string HashPassword(string pw) =>
-            hasher.HashPassword(null, pw);
-        
-        public static bool VerifyPassword(string pw, string hash) =>
-            hasher.VerifyHashedPassword(null, hash, pw) == PasswordVerificationResult.Success;
-
 
         public static async Task<bool> Login(UserManager<IdentityUser> user_manager, LoginData login) {
             var identity_user = await user_manager.FindByNameAsync(login.Name);
