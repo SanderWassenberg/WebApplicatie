@@ -1,9 +1,13 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SwapGame_API.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace SwapGame_API
@@ -17,9 +21,12 @@ namespace SwapGame_API
 
             // Gekut met de database
             var connection_string = builder.Configuration.GetConnectionString("Extreem_Veilige_DB_pls_no_hack");
-            builder.Services.AddDbContext<SwapGame_DbContext>(options => { 
-                options.UseSqlServer(connection_string);
-            });
+
+            builder.Services.AddDbContext<SwapGame_DbContext>(
+                o => o.UseSqlServer(connection_string));
+
+            builder.Services.AddDbContext<SwapGame_IdentityDbContext>(
+                o => o.UseSqlServer(connection_string));
 
             // Mijn eigen gerotzooi om er maar voor te zorgen dat ik in de functies toegang heb tot de Configuration.
             // Dit zorgt ervoor dat ik in de MapWhatever functies een callback kan gooien die een ConfigurationManager verwacht
@@ -39,6 +46,9 @@ namespace SwapGame_API
                 });
             });
 
+            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<SwapGame_IdentityDbContext>()
+                .AddDefaultTokenProviders();
 
             // TODO: Volg deze 2 tutorials: https://stackoverflow.com/questions/72350711/how-do-i-add-authentication-to-an-asp-net-core-minimal-api-using-identity-but-w
             builder.Services.AddAuthentication(o => {
@@ -100,36 +110,27 @@ namespace SwapGame_API
                 logger.LogInformation("thingy: {}, {}, {}", t.Name, t.Num, t.PropDieIkNietMeegeef);
             }).RequireCors(MyCorsSettings);
 
-            app.MapGet("api/list_users", [Authorize] (SwapGame_DbContext context) => {
+            app.MapGet("api/list_users", [Authorize(Roles = "Administrator")] (SwapGame_DbContext context, HttpContext http_context) => {
                 return context.Users.AsEnumerable();
             }).RequireCors(MyCorsSettings);
 
-            app.MapPost("api/request_token", [AllowAnonymous] (LoginData login, SwapGame_DbContext context, 
-                //ILoggerFactory lf, 
+            app.MapPost("api/request_token", [AllowAnonymous] async (LoginData login,
+            HttpContext http_context,
+            SwapGame_DbContext db_context,
+            //ILoggerFactory lf,
+            UserManager<IdentityUser> user_manager,
             ConfigurationManager config) => {
                 //var logger = lf.CreateLogger("request_token");
 
-                var db_user = context.Users.SingleOrDefault(u => u.Name == login.Name);
-
-                if (db_user is null) 
-                    return Results.BadRequest();
-
-                var login_succes = SG_Util.VerifyPassword(login.Password, db_user.HashedPassword);
+                var login_succes = await SG_Util.Login(user_manager, login);
 
                 if (!login_succes) 
-                    return Results.BadRequest();
+                    return Results.Unauthorized();
 
-                var key         = config["Jwt:Key"];
-                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
-
-                var stringToken = SG_Util.JwtTokenToString(new JwtSecurityToken(
-                    issuer:   config["Jwt:Issuer"],
-                    audience: config["Jwt:Audience"],
-                    signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
-                ));
+                var stringToken = SG_Util.BuildJwtToken(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"], login.Name);
 
                 return Results.Ok(stringToken);
-            });
+            }).RequireCors(MyCorsSettings); ;
 
             app.MapGet("api/hash_password", (string pw) => {
                 return SG_Util.HashPassword(pw);
@@ -140,6 +141,22 @@ namespace SwapGame_API
                 l.LogInformation("the hash is `{}`", hash);
                 return SG_Util.VerifyPassword(pw, hash) ? "true" : "false";
             }).RequireCors(MyCorsSettings);
+
+            app.MapPost("api/signup", [AllowAnonymous] async (
+                SignupData signup, 
+                UserManager<IdentityUser> user_manager) => {
+                var identityUser = new IdentityUser(signup.Name) {
+                    //Email = signup.Name + "@fake_email.com" // stupid bs Identity crap requires you to fill in an email suck my nuts
+                };
+
+                var result = await user_manager.CreateAsync(identityUser, signup.Password);
+
+                return result.Succeeded
+                    ? Results.Ok()
+                    : Results.BadRequest(result.Errors);
+            })
+                .RequireCors(MyCorsSettings);
+            ;
 
             app.Run();
         }

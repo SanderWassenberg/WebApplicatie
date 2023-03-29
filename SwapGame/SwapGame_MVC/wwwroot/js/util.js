@@ -29,17 +29,48 @@ class Array2D {
 }
 
 const remove_all_children = e => {
-    while (e.childNodes[0]) e.childNodes[0].remove()
+    while (e.lastChild) e.lastChild.remove()
 }
 
 const api_path = (location.hostname === "localhost" ? "https://localhost:7110" : location.origin) + "/api";
 
 console.log("using API path", api_path)
 
-const api_post = (path, object) => fetch(api_path + path, {
+const api_post = async (path, object) => fetch(api_path + path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(object)
 });
 
-export { Template, Array2D, remove_all_children, api_path, api_post }
+const formdata_obj = form => {
+    const object = {};
+    (new FormData(form)).forEach((value, key) => object[key] = value);
+    return object;
+}
+
+function update_list(ul, list) {
+    remove_all_children(ul)
+    
+    if (list === undefined || list === null) {
+        ul.classList.add("hide")
+        return;
+    }
+
+    if (list instanceof Array === false) {
+        list = [list]
+    } else if (list.length === 0) {
+        ul.classList.add("hide") 
+        return;
+    }
+    
+    ul.classList.remove("hide")
+
+    for (const item of list) {
+        const li = document.createElement("li")
+        li.innerText = item;
+        ul.append(li)
+    }
+
+}
+
+export { Template, Array2D, remove_all_children, api_path, api_post, formdata_obj, update_list }

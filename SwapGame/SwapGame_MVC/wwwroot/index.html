@@ -64,13 +64,13 @@
 
             <section class="login-area hide">
                 <h1>Login</h1>
-                <form class="basic">  
+                <form class="basic" id="login-form">  
                     <div><label>Name
-                        <input type="text" required>
+                        <input required type="text" name="Name">
                     </label></div>
 
                     <div><label>Password
-                        <input type="password" required>
+                        <input required type="password" name="Password">
                     </label></div>
 
                     <div><label>
@@ -84,18 +84,21 @@
 
             <section class="signup-area">
                 <h1>Sign up</h1>
-                <form class="basic">  
+                <form class="basic" id="signup-form">  
                     <div><label>Name
-                        <input type="text" required>
+                        <input required type="text" name="Name">
                     </label></div>
 
                     <div><label>Password
-                        <input type="password" required>
+                        <input required type="password" name="Password">
                     </label></div>
 
                     <div><label>Confirm Password
-                        <input type="password" required>
+                        <input required type="password" name="ConfirmPassword">
                     </label></div>
+
+                    <ul class="signup-area__errors hide">
+                    </ul>
 
                     <div><label>
                         <input class="button" type="submit" class="button" value="Create account">

@@ -5,6 +5,7 @@
     --primary-color: #302AE6;
     --secondary-color: #536390;
     --font-color: #424242;
+    --font-color-error: #dd2828;
     --bg-color: #b9d0e4;
     --bg-color-secondary: #e0ebf5;
     --bg-color-secondary-detail: #95b5d4;
@@ -45,6 +46,7 @@
     --primary-color: #9A97F3;
     --secondary-color: #818cab;
     --font-color: #e1e1ff;
+    --font-color-error: #ff5858;
     --bg-color: #161625;
     --bg-color-secondary: #312b40;
     --bg-color-secondary-detail: #575265;
@@ -204,6 +206,10 @@ swapgame-board {
     background-color: var(--bg-color-secondary);
     padding: 10px;
 }
+.signup-area__errors {
+    margin-left: 20px;
+    color: var(--font-color-error);
+}
 
 input[type="text"], input[type="password"] {
     background: var(--bg-textbox);
@@ -343,11 +349,11 @@ button, .button {
     background-color: var(--neutral-button-bg);
     border-color: var(--neutral-button-border);
     color: var(--button-text);
-    cursor: pointer;
 }
-button:hover, .button:hover {
+button:hover:not([disabled=""]), .button:hover:not([disabled=""]) {
     background-color: var(--neutral-button-bg-hover);
     transition-duration: 0s;
+    cursor: pointer;
 }
 .button.positive {
     background-color: var(--positive-button-bg);
