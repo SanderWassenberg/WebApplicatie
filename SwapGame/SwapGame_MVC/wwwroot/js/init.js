@@ -170,7 +170,7 @@ document.querySelector("#test_button").addEventListener("click", async e => {
 		try {
 			const obj = await response.json()
 			update_list(error_list, obj.map(o => o.description))
-			redirect("login")
+			if (obj.length === 0 )redirect("login")
 		} catch (err) {
 			console.log("json parse error:", err)
 			update_list(error_list, ["Something went wrong when parsing the response from the server", err])
