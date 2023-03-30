@@ -14,16 +14,24 @@ namespace SwapGame_API
         static string MyCorsSettings = "just_work_ffs";
 
         public static void Main(string[] args) {
+
             var builder = WebApplication.CreateBuilder(args);
 
+            {
+                bool configured_properly = verify_configuration(builder.Configuration);
+                if (!configured_properly) return;
+            }
+
             // Gekut met de database
-            var connection_string = builder.Configuration.GetConnectionString("Extreem_Veilige_DB_pls_no_hack");
+            {
+                var connection_string = builder.Configuration["SwapGame:Extreem_Veilige_DB_pls_no_hack"];
 
-            builder.Services.AddDbContext<SwapGame_DbContext>(
-                o => o.UseSqlServer(connection_string));
+                builder.Services.AddDbContext<SwapGame_DbContext>(
+                    o => o.UseSqlServer(connection_string));
 
-            builder.Services.AddDbContext<SwapGame_IdentityDbContext>(
-                o => o.UseSqlServer(connection_string));
+                builder.Services.AddDbContext<SwapGame_IdentityDbContext>(
+                    o => o.UseSqlServer(connection_string));
+            }
 
             // Mijn eigen gerotzooi om er maar voor te zorgen dat ik in de functies toegang heb tot de Configuration.
             // Dit zorgt ervoor dat ik in de MapWhatever functies een callback kan gooien die een ConfigurationManager verwacht
@@ -53,9 +61,9 @@ namespace SwapGame_API
                 o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o => {
-                var issuer   = builder.Configuration["Jwt:Issuer"];
-                var audience = builder.Configuration["Jwt:Audience"];
-                var key      = builder.Configuration["Jwt:Key"];
+                var issuer   = builder.Configuration["SwapGame:Jwt:Issuer"];
+                var audience = builder.Configuration["SwapGame:Jwt:Audience"];
+                var key      = builder.Configuration["SwapGame:Jwt:Key"];
 
                 o.TokenValidationParameters = new TokenValidationParameters {
                     ValidateIssuer = true,
@@ -74,13 +82,17 @@ namespace SwapGame_API
 
 
             var app = builder.Build();
-            app.Logger.LogInformation("is development: {}", app.Environment.IsDevelopment());
 
-            app.UseExceptionHandler(new ExceptionHandlerOptions {
-                ExceptionHandler = async http_context => {
-                    await http_context.Response.WriteAsJsonAsync("server broke :(");
-                }
-            });
+            bool is_development = app.Environment.IsDevelopment();
+            app.Logger.LogInformation("is development: {}", is_development);
+
+            if (!is_development) { 
+                app.UseExceptionHandler(new ExceptionHandlerOptions {
+                    ExceptionHandler = async http_context => {
+                        await http_context.Response.WriteAsJsonAsync("server broke :(");
+                    }
+                });
+            }
 
             app.UseHttpsRedirection();
             
@@ -143,7 +155,7 @@ namespace SwapGame_API
             if (!login_succes) 
                 return Results.Unauthorized();
 
-            var stringToken = SG_Util.BuildJwtToken(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"], login.Name);
+            var stringToken = SG_Util.BuildJwtToken(config["SwapGame:Jwt:Key"], config["SwapGame:Jwt:Issuer"], config["SwapGame:Jwt:Audience"], login.Name);
             http_context.Response.Cookies.Append(
                 "SG-api-token",
                 stringToken
@@ -167,6 +179,31 @@ var result = await user_manager.CreateAsync(identityUser, signup.Password);
             return result.Succeeded
                 ? Results.Ok()
                 : Results.BadRequest(result.Errors);
+        }
+
+        static bool verify_configuration(ConfigurationManager config) {
+
+            var missing_config_values = new List<string>();
+            find_missing_config_values(config.GetSection("SwapGame"), missing_config_values);
+
+            static void find_missing_config_values(IConfigurationSection section, List<string> miss_list) {
+                if (section.Value == "<MISSING>") {
+                    miss_list.Add(section.Path);
+                } else {
+                    foreach (var c in section.GetChildren())
+                        find_missing_config_values(c, miss_list);
+                }
+            }
+
+            if (missing_config_values.Count == 0) 
+                return true;
+            
+            Console.Error.WriteLine("Please fill out the following values in appsettings.json:");
+
+            foreach (var missing_value in missing_config_values)
+                Console.Error.WriteLine("* {0}", missing_value);
+
+            return false;
         }
     }
 }
