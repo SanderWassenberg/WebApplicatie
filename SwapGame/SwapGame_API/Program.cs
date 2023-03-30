@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
@@ -105,12 +106,17 @@ namespace SwapGame_API
                 }
             );
 
+            app.UseCookiePolicy(new CookiePolicyOptions { 
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure   = CookieSecurePolicy.Always
+            });
+
             var api = app.MapGroup("api").RequireCors(MyCorsSettings);
             api.MapGet (nameof(admins_only),   admins_only);
             api.MapGet (nameof(jwt_only),      jwt_only);
             api.MapGet (nameof(exception),     exception);
             api.MapPost(nameof(signup),        signup);
-            api.MapPost(nameof(request_token), request_token);
+            api.MapPost(nameof(login),         login);
 
             app.Run();
         }
@@ -128,10 +134,10 @@ namespace SwapGame_API
         }
 
         [AllowAnonymous]
-        static async Task<IResult> request_token(
+        static async Task<IResult> login(
             LoginData login,
             HttpContext http_context,
-            SwapGame_DbContext db_context,
+            //SwapGame_DbContext db_context,
             //ILoggerFactory lf,
             UserManager<IdentityUser> user_manager,
             ConfigurationManager config)  
@@ -144,8 +150,13 @@ namespace SwapGame_API
                 return Results.Unauthorized();
 
             var stringToken = SG_Util.BuildJwtToken(config["Jwt:Key"], config["Jwt:Issuer"], config["Jwt:Audience"], login.Name);
+            http_context.Response.Cookies.Append(
+                "SG-api-token",
+                stringToken
+            );
+            //http_context.Session.
 
-            return Results.Ok(stringToken);
+            return Results.Ok();
         }
 
         [AllowAnonymous]
