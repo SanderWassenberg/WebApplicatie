@@ -74,6 +74,7 @@ namespace SwapGame_API
 
 
             var app = builder.Build();
+            app.Logger.LogInformation("is development: {}", app.Environment.IsDevelopment());
 
             app.UseExceptionHandler(new ExceptionHandlerOptions {
                 ExceptionHandler = async http_context => {
