@@ -7,6 +7,10 @@ using Microsoft.IdentityModel.Tokens;
 using SwapGame_API.Models;
 using System.Text;
 
+using SendGrid;
+using SendGrid.Helpers.Mail;
+using Microsoft.AspNetCore.Mvc;
+
 namespace SwapGame_API
 {
     public class Program {
@@ -37,8 +41,8 @@ namespace SwapGame_API
             // Dit zorgt ervoor dat ik in de MapWhatever functies een callback kan gooien die een ConfigurationManager verwacht
             // en dan wordt die magisch met dependency injection ofzo meegegeven.
             builder.Services.Add(new ServiceDescriptor(
-                typeof(ConfigurationManager), 
-                sp => builder.Configuration, 
+                typeof(ConfigurationManager),
+                sp => builder.Configuration,
                 ServiceLifetime.Singleton)
             );
 
@@ -58,8 +62,8 @@ namespace SwapGame_API
             // TODO: Volg deze 2 tutorials: https://stackoverflow.com/questions/72350711/how-do-i-add-authentication-to-an-asp-net-core-minimal-api-using-identity-but-w
             builder.Services.AddAuthentication(o => {
                 o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                o.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultChallengeScheme    = JwtBearerDefaults.AuthenticationScheme;
+                o.DefaultScheme             = JwtBearerDefaults.AuthenticationScheme;
             }).AddJwtBearer(o => {
                 var issuer   = builder.Configuration["SwapGame:Jwt:Issuer"];
                 var audience = builder.Configuration["SwapGame:Jwt:Audience"];
@@ -86,7 +90,7 @@ namespace SwapGame_API
             bool is_development = app.Environment.IsDevelopment();
             app.Logger.LogInformation("is development: {}", is_development);
 
-            if (!is_development) { 
+            if (!is_development) {
                 app.UseExceptionHandler(new ExceptionHandlerOptions {
                     ExceptionHandler = async http_context => {
                         await http_context.Response.WriteAsJsonAsync("server broke :(");
@@ -95,7 +99,7 @@ namespace SwapGame_API
             }
 
             app.UseHttpsRedirection();
-            
+
             app.UseCors();
 
             // these must be in this order!
@@ -112,19 +116,39 @@ namespace SwapGame_API
                 }
             );
 
-            app.UseCookiePolicy(new CookiePolicyOptions { 
+            app.UseCookiePolicy(new CookiePolicyOptions {
                 HttpOnly = HttpOnlyPolicy.Always,
-                Secure   = CookieSecurePolicy.Always
+                Secure = CookieSecurePolicy.Always
             });
 
             var api = app.MapGroup("api").RequireCors(MyCorsSettings);
-            api.MapGet (nameof(admins_only),   admins_only);
-            api.MapGet (nameof(jwt_only),      jwt_only);
-            api.MapGet (nameof(exception),     exception);
-            api.MapPost(nameof(signup),        signup);
-            api.MapPost(nameof(login),         login);
+            api.MapGet(nameof(admins_only), admins_only);
+            api.MapGet(nameof(jwt_only), jwt_only);
+            api.MapGet(nameof(exception), exception);
+            api.MapPost(nameof(signup), signup);
+            api.MapPost(nameof(login), login);
+            api.MapPost(nameof(email), email);
 
             app.Run();
+        }
+
+        [AllowAnonymous]
+        static async Task<IResult> email([FromBody] string email_address, ConfigurationManager config) {
+            var api_key = config["SwapGame:Email:Api_Key"];
+            var client = new SendGridClient(api_key);
+            var msg = new SendGridMessage() {
+                // this email must be the one verified at SendGrid (which is my school email)
+                From = new EmailAddress(config["SwapGame:Email:Sender_Address"], "SwapGame"),
+                Subject = "Sending with Twilio SendGrid is Fun",
+                PlainTextContent = "and easy to do anywhere, especially with C#"
+            };
+            msg.AddTo(new EmailAddress(email_address, "NAAM_VAN_ONTVANGER"));
+            var response = await client.SendEmailAsync(msg);
+
+            if (response.IsSuccessStatusCode)
+                return Results.Ok("Email queued successfully!");
+            else
+                return Results.StatusCode(500);
         }
 
         [Authorize(Roles = "Administrator")]
@@ -141,12 +165,12 @@ namespace SwapGame_API
 
         [AllowAnonymous]
         static async Task<IResult> login(
-            LoginData login,
+            [FromBody] LoginData login,
             HttpContext http_context,
             //SwapGame_DbContext db_context,
             //ILoggerFactory lf,
             UserManager<IdentityUser> user_manager,
-            ConfigurationManager config)  
+            ConfigurationManager config)
         {
             //var logger = lf.CreateLogger("request_token");
 
@@ -167,7 +191,7 @@ namespace SwapGame_API
 
         [AllowAnonymous]
         static async Task<IResult> signup(
-            SignupData signup,
+            [FromBody] SignupData signup,
             UserManager<IdentityUser> user_manager)
         {
             if (!signup.complete()) return Results.BadRequest("incomplete signup data");
