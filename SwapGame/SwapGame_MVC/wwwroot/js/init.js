@@ -134,14 +134,14 @@ document.querySelector("#test_button").addEventListener("click", async e => {
 
 		const data = new FormData(form);
 
-		const ok = data.get("Password") === data.get("ConfirmPassword")
+		const pw_match = data.get("Password") === data.get("ConfirmPassword")
 
-		// seems weird but important to still call with undefined, to empty the list
-		set_ul_content(error_list, ok ? undefined : "Passwords do not match.") 
+		// This may seem weird, but it's important to still call with undefined, to empty the list
+		set_ul_content(error_list, pw_match ? undefined : "Passwords do not match.") 
 
-		if (!ok) return;
+		if (!pw_match) return;
 
-		data.delete("ConfirmPassword") // do not send this
+		data.delete("ConfirmPassword")
 		const response = await api_post('/signup', data);
 
 		if (response.ok) {
