@@ -43,8 +43,8 @@ class Page {
 }
 
 { // Sidebar gedoe
-	const button = document.getElementById("sidebar-button");
-	const sidebar = document.getElementById("sidebar");
+	const button = document.querySelector("#sidebar-button");
+	const sidebar = document.querySelector("#sidebar");
 	const overlay = document.querySelector(".focus-overlay");
 	let bar_shown = false;
 
