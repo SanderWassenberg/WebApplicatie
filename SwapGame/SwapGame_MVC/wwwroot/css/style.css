@@ -137,6 +137,9 @@ swapgame-board {
     flex-direction: column;
     gap:15px;
 }
+.sidebar-fixedwidth { /* to make opening and closing the sidebar more pleasant. it's content should not resize */
+    width: var(--sidebar-width);
+}
 #sidebar-options {
     display:flex;
     flex-direction: column;

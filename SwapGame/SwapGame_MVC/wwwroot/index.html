@@ -32,25 +32,27 @@
 
         <div class="sidebar-container" style="display: flex;">
             <nav class="sidebar" id="sidebar">
-                <div class="sidebar-inner">
-                    <div id="sidebar-profile">
-                        <img class="profile-pic" src="img/1.png">
-                        <div class="user-name">UserName</div>
-                    </div>
-
-                    <div id="sidebar-options">
-                        <button data-redirect="game">Game</button>
-                        <button data-redirect="login">Login</button>
-                        <button data-redirect="signup">Signup</button>
-                        <button id="test_button">Do test</button>
-                        <div><b>Dark Theme</b>
-                            <label id="theme_switch" class="switch">
-                                <input type="checkbox">
-                                <div class="slider"></div>
-                            </label>
+                <div class="sidebar-fixedwidth">
+                    <div class="sidebar-inner">
+                        <div id="sidebar-profile">
+                            <img class="profile-pic" src="img/1.png">
+                            <div class="user-name">UserName</div>
                         </div>
-                    </div>
 
+                        <div id="sidebar-options">
+                            <button data-redirect="game">Game</button>
+                            <button data-redirect="login">Login</button>
+                            <button data-redirect="signup">Signup</button>
+                            <button id="test_button">Do test</button>
+                            <div><b>Dark Theme</b>
+                                <label id="theme_switch" class="switch">
+                                    <input type="checkbox">
+                                    <div class="slider"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </nav>
             <div style="width:0;position:relative;z-index: 1;">
@@ -62,7 +64,7 @@
 
         <main>
 
-            <section class="login-area hide">
+            <section data-page="login" class="login-area hide">
                 <h1>Login</h1>
                 <form class="basic" id="login-form">  
                     <div><label>Name
@@ -82,7 +84,7 @@
                 
             </section>
 
-            <section class="signup-area">
+            <section data-page="signup" class="signup-area">
                 <h1>Sign up</h1>
                 <form class="basic" id="signup-form">  
                     <div><label>Name
@@ -108,7 +110,7 @@
                 <a href="javascript:" data-redirect="login" class="link-below-form">Already have an account?</a>
             </section>
 
-            <swapgame-board class="hide"></swapgame-board>
+            <swapgame-board data-page="game" class="hide"></swapgame-board>
 
         </main>
 

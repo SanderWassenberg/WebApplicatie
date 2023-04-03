@@ -5,28 +5,17 @@ import {api_post, set_ul_content} from "./util.js"
 
 class Page {
 
+	static main = document.querySelector("main");
+
 	static redirect(where) {
 
-		switch(where) {
-			case "login": 
-				switch_main_content(login_elem)
-			break;
-			case "signup": 
-				switch_main_content(signup_elem);
-			break;
-			case "game": 
-				switch_main_content(game_elem);
-			break;
-			default: console.error("unknown redirect target", where)
-		}
+		const elem_to_show = Page.main.querySelector(`[data-page='${where}']`);
 
-		function switch_main_content(elem_to_show) {
-			for (const elem of main.children) {
-				if (elem === elem_to_show)
-					elem.classList.remove("hide")
-				else
-					elem.classList.add("hide")
-			}
+		for (const elem of Page.main.children) {
+			if (elem === elem_to_show)
+				elem.classList.remove("hide")
+			else
+				elem.classList.add("hide")
 		}
 	}
 }
