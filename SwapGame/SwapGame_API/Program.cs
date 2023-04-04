@@ -18,17 +18,19 @@ namespace SwapGame_API
         static string MyCorsSettings = "just_work_ffs";
 
         public static void Main(string[] args) {
-
             var builder = WebApplication.CreateBuilder(args);
 
-            {
-                bool configured_properly = verify_configuration(builder.Configuration);
-                if (!configured_properly) return;
-            }
+            // Ik zou een early return willen doen hier maar als ik dat doe dan werken de update-database dingen niet meer blijkbaar,
+            // want om een of andere reden voeren die gewoon dit hele programma uit ofzo, echt door idioten bedacht.
+            bool configured_properly = verify_configuration(builder.Configuration);
 
             // Gekut met de database
             {
                 var connection_string = builder.Configuration["SwapGame:Extreem_Veilige_DB_pls_no_hack"];
+                if (connection_string == "<MISSING>") {
+                    Console.Error.WriteLine("Oh nyo we kunnen niet vewdew zondew connection stwing uwuw >:(\nGa die maar even gauw invullen jij imbiciel.");
+                    return;
+                }
 
                 builder.Services.AddDbContext<SwapGame_DbContext>(
                     o => o.UseSqlServer(connection_string));
@@ -86,6 +88,15 @@ namespace SwapGame_API
 
 
             var app = builder.Build();
+
+            // Dit moeten we na builder.Build doen omdat anders update-database commands niet meer goed werken, super scheef.
+            // Op het moment dat update database gedoe wordt gedaan dan wordt alles tot aan builder.Build uitgevoerd en
+            // daarna doet hij zijn eigen ding, deze code wordt dan nooit bereikt. Als de API normaal uitgevoerd wordt dus wel,
+            // en dan willen we die early return uitvoeren.
+            if (!configured_properly) {
+                Console.Error.WriteLine("Missing items in configuration, exiting...");
+                return;
+            }
 
             bool is_development = app.Environment.IsDevelopment();
             app.Logger.LogInformation("is development: {}", is_development);
