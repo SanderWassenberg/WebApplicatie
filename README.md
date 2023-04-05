@@ -117,7 +117,12 @@ scp -r SwapGame_API/sql_scripts/ student@145.44.232.24:showcase
 ```
 
 ssh naar de Skylab Debian machine
-Kijk of de SQL server actief is met `docker ps -a`
+
+Controleer dat de bestanden op de machine staan. 
+
+Verander wanneer nodig de naam van de database en het wachtwoord in `showcase/api/publish/appsettings.json`
+
+Kijk of de SQL server actief is met `docker ps -a`, zo nee start deze dan met `docker start sql1`
 
 Kopieer de scripts naar de sql container
 
