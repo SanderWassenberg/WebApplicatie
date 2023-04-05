@@ -85,18 +85,18 @@ Let er op dat je hier twee verschillende bestanden van maakt, `init_db.sql` en `
 Open `init_db.sql` en voeg aan de top het volgende toe:
 
 ```
-DROP DATABASE IF EXISTS SwapGame_DB
+DROP DATABASE IF EXISTS SwapGameDB
 GO
-CREATE DATABASE SwapGame_DB
+CREATE DATABASE SwapGameDB
 GO
-USE SwapGame_DB
+USE SwapGameDB
 GO
 ```
 
 Aan `init_idb.sql` voeg je alleen de laatste twee regels toe (ook bovenaan het bestand).
 
 ```
-USE SwapGame_DB
+USE SwapGameDB
 GO
 ```
 
