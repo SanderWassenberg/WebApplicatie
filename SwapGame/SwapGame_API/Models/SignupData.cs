@@ -1,12 +1,12 @@
-﻿namespace SwapGame_API.Models {
-    public struct SignupData {
-        public string Name { get; set; }
-        public string Password { get; set; }
+﻿namespace SwapGame_API.Models;
 
-        // ! Must update is_valid when adding new fields !
+public struct SignupData {
+    public string Name { get; set; }
+    public string Password { get; set; }
 
-        public bool complete() => 
-            this.Name is not null && 
-            this.Password is not null;
-    }
+    // ! Must update is_valid when adding new fields !
+
+    public bool complete() => 
+        this.Name is not null && 
+        this.Password is not null;
 }

@@ -1,9 +1,9 @@
-﻿namespace SwapGame_API {
-    public static class Roles {
+﻿namespace SwapGame_API;
 
-        public const string Admin   = "Administrator";
-        public const string Default = "Default";
+public static class Roles {
 
-        public static readonly string[] List = new string[] { Default, Admin };
-    }
+    public const string Admin   = "Administrator";
+    public const string Default = "Default";
+
+    public static readonly string[] List = new string[] { Default, Admin };
 }

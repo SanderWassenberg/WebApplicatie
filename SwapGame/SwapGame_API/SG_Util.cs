@@ -5,40 +5,34 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-namespace SwapGame_API {
-    public static class SG_Util {
-        // cringe Microsoft stupid bs why tf does this need to be a generic class implementing an interface when it could have just been two static methods
-        private static PasswordHasher<object> hasher = new PasswordHasher<object>();
+namespace SwapGame_API;
 
-        public static string HashPassword(string pw) =>
-            hasher.HashPassword(null, pw);
-        
-        public static bool VerifyPassword(string pw, string hash) =>
-            hasher.VerifyHashedPassword(null, hash, pw) == PasswordVerificationResult.Success;
+public static class SG_Util {
 
+    // cring bs why do I need to instantiate a class fuck off with that
+    private static JwtSecurityTokenHandler jwt_handler = new JwtSecurityTokenHandler();
 
-        public static async Task<bool> Login(UserManager<SwapGameUser> user_manager, LoginData login) {
-            var identity_user = await user_manager.FindByNameAsync(login.Name);
-            return await user_manager.CheckPasswordAsync(identity_user, login.Password);
+    public static async Task<string> BuildJwtToken(JwtOptions options, SwapGameUser user, UserManager<SwapGameUser> user_manager) {
+        // Voor hulp, zie deze repo: https://github.com/joydipkanjilal/jwt-aspnetcore
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        };
+
+        var roles = await user_manager.GetRolesAsync(user);
+
+        for (int i = 0; i < roles.Count; i++) {
+            claims.Add(new Claim(ClaimTypes.Role, roles[i]));
         }
 
-        // cring bs why do I need to instantiate a class fuck off with that
-        private static JwtSecurityTokenHandler jwt_handler = new JwtSecurityTokenHandler();
-
-        public static string BuildJwtToken(string key, string issuer, string audience, string username) {
-            // Voor hulp, zie deze repo: https://github.com/joydipkanjilal/jwt-aspnetcore
-
-            return jwt_handler.WriteToken(new JwtSecurityToken(
-                issuer:   issuer,
-                audience: audience,
-                claims: new[] {
-                    new Claim(ClaimTypes.Name, username),
-                    // This GUID makes the token unique, otherwise it we would generate the same token every time
-                    new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
-                },
-                expires:  DateTime.Now.AddMinutes(30),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key)), SecurityAlgorithms.HmacSha256)
-            ));
-        }
+        return jwt_handler.WriteToken(new JwtSecurityToken(
+            issuer:   options.Issuer,
+            audience: options.Audience,
+            claims:   claims,
+            expires:  DateTime.Now.AddMinutes(30),
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Key)), SecurityAlgorithms.HmacSha256)
+        ));
     }
 }
