@@ -1,5 +1,5 @@
 ﻿namespace SwapGame_API.Models {
-    public class LoginData {
+    public struct LoginData {
         public string Name { get; set; }
         public string Password { get; set; }
     }

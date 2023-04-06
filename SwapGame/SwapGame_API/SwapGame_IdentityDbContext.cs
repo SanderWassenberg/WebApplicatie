@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace SwapGame_API {
 
@@ -18,9 +17,14 @@ namespace SwapGame_API {
     // Om te installeren:
     // > dotnet tool install --global dotnet-ef
 
-    public class SwapGame_IdentityDbContext : IdentityDbContext<IdentityUser, IdentityRole, string> {
-        public SwapGame_IdentityDbContext
-           (DbContextOptions<SwapGame_IdentityDbContext> options)
-            : base(options) {}
+    public class SwapGame_IdentityDbContext : IdentityDbContext<SwapGameUser, IdentityRole, string> {
+        public SwapGame_IdentityDbContext(DbContextOptions<SwapGame_IdentityDbContext> options) : base(options) { }
+
+        //DbSet<Models.Test> Tests { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder model_builder) {
+            base.OnModelCreating(model_builder);
+
+        }
     }
 }

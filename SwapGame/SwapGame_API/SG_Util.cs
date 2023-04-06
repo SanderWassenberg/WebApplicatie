@@ -17,7 +17,7 @@ namespace SwapGame_API {
             hasher.VerifyHashedPassword(null, hash, pw) == PasswordVerificationResult.Success;
 
 
-        public static async Task<bool> Login(UserManager<IdentityUser> user_manager, LoginData login) {
+        public static async Task<bool> Login(UserManager<SwapGameUser> user_manager, LoginData login) {
             var identity_user = await user_manager.FindByNameAsync(login.Name);
             return await user_manager.CheckPasswordAsync(identity_user, login.Password);
         }
