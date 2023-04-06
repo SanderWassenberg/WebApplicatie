@@ -13,7 +13,6 @@ namespace SwapGame_API {
             using (var scope = services.CreateScope()) {
                 var role_manager = scope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
 
-
                 if (role_manager is null) 
                     throw new Exception("Couldn't seed database, unable to get a RoleManager service.");
 
@@ -24,24 +23,28 @@ namespace SwapGame_API {
                     }
                 }
 
-
                 var user_manager = scope.ServiceProvider.GetService<UserManager<SwapGameUser>>();
 
-
-
-                const string AdminDefaultPassword = "SuperGeheim1!";
-                var admin = user_manager.Users.SingleOrDefault(u => u.UserName == "admin");
-                if (admin is null) {
-                    await user_manager.CreateAsync(new SwapGameUser("admin"), AdminDefaultPassword);
-                    await user_manager.AddToRoleAsync(admin, Roles.Admin);
-                } else {
-                    if (!await user_manager.HasPasswordAsync(admin)) {
-                        await user_manager.AddPasswordAsync(admin, AdminDefaultPassword);
-                    }
-                    if (!await user_manager.IsInRoleAsync(admin, Roles.Admin)) {
-                        await user_manager.AddToRoleAsync(admin, Roles.Admin);
+                async Task confirm_role(SwapGameUser user, string role) {
+                    if (!await user_manager.IsInRoleAsync(user, role)) {
+                        await user_manager.AddToRoleAsync(user, role);
                     }
                 }
+
+                const string AdminDefaultPassword = "SuperGeheim1!";
+
+                var admin = user_manager.Users.SingleOrDefault(u => u.UserName == "admin");
+
+                if (admin is null) {
+                    await user_manager.CreateAsync(new SwapGameUser("admin"), AdminDefaultPassword);
+                }
+
+                if (!await user_manager.HasPasswordAsync(admin)) {
+                    await user_manager.AddPasswordAsync(admin, AdminDefaultPassword);
+                }
+
+                await confirm_role(admin, Roles.Admin);
+                await confirm_role(admin, Roles.Default);
             }
         }
     }
