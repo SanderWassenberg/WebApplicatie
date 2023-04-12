@@ -1,18 +1,28 @@
-import {SwapGame_VisualsManager} from "./visualsmanager.js" // required for attaching the game to the visuals.
 import {SwapGame, Piece, PieceType} from "./game.js"
-import {api_post, set_ul_content} from "./util.js"
+import {api_post, set_ul_content, bind_inner_text} from "./util.js"
+import "./visualsmanager.js" // required for attaching the game to the visuals.
+
 
 
 class Page {
-
+	
 	static main = document.querySelector("main");
+	static {
+		Page.redirect("signup")
+	}
+
+
+	jwt_token;
+	static #username;
+
+	static set_user(username) {
+		Page.#username = username;
+		bind_inner_text("username", username);
+	}
 
 	static redirect(where) {
-
-		const elem_to_show = Page.main.querySelector(`[data-page='${where}']`);
-
 		for (const elem of Page.main.children) {
-			if (elem === elem_to_show)
+			if (elem.dataset.page === where)
 				elem.classList.remove("hide")
 			else
 				elem.classList.add("hide")
@@ -121,15 +131,16 @@ visuals.set_game(game)
 
 
 document.querySelector("#test_button").addEventListener("click", async e => {
-	const response = await api_post('/test', {Name: "CoolName", Num:56});
+	const response = await api_post('/ping');
 	console.log(response)
 })
 
 {
 	const form   = document.querySelector("#signup-form");
+	const submit_btn = form.querySelector("input[type='submit']");
 	const error_list = form.querySelector(".signup-area__errors")
 
-	form.addEventListener("submit", async e => {
+	const signup_submit_event = async e => {
 		e.preventDefault();
 
 		const data = new FormData(form);
@@ -142,26 +153,73 @@ document.querySelector("#test_button").addEventListener("click", async e => {
 		if (!pw_match) return;
 
 		data.delete("ConfirmPassword")
-		const response = await api_post('/signup', data);
+
+		submit_btn.disabled = true;
+		let response;
+		try {
+			response = await api_post('/signup', data);
+		} catch(e) {
+			set_ul_content(error_list, "Failed to reach API")
+			return // finally-block runs before returning, don't worry
+		} finally {
+			submit_btn.disabled = false;
+		}
 
 		if (response.ok) {
+			form.reset();
+			set_ul_content(error_list);
 			Page.redirect("login")
 			return
 		}
 		
-		const response_body = await response.text();
-		const errors = (()=>{
-			if (response.status === 400) try {
-				return JSON.parse(response_body).map(o => o.description);
-			} catch {
-				return response_body;
-			}
-			
-			if (response.status >= 500) return response_body; 
-			
-			return `Unexpected server response status ${response.status}`; 
-		})()
+		let errors = await get_error_messages_from_response(response, result => {
+			if (result.identity_errors) return result.identity_errors.map(o => o.description)
+			if (result.error_message)   return result.error_message
+		})
 
 		set_ul_content(error_list, errors)
-	})
+	}
+
+	form.addEventListener("submit", signup_submit_event)
+}
+
+{
+	const form   = document.querySelector("#login-form");
+	const submit_btn = form.querySelector("input[type='submit']");
+	const error_list = form.querySelector(".login-area__errors")
+
+	const login_submit_event = async e => {
+		e.preventDefault();
+
+		const data = new FormData(form);
+
+		submit_btn.disabled = true;
+		let response;
+		try {
+			response = await api_post('/login', data);
+		} catch(e) {
+			set_ul_content(error_list, "Failed to reach API");
+			return // finally-block runs before returning, dont worry.
+		} finally {
+			submit_btn.disabled = false;
+		}
+
+		if (response.ok) {
+			Page.set_user(data.get("Name"))
+			Page.jwt_token = (await response.json()).jwt_token;
+
+			form.reset();
+			set_ul_content(error_list);
+			Page.redirect("welcome")
+			return
+		}
+
+		const errors = await get_error_messages_from_response(response, result => {
+			if (result.error_message) return result.error_message;
+		})
+
+		set_ul_content(error_list, errors)
+	}
+
+	form.addEventListener("submit", login_submit_event);
 }

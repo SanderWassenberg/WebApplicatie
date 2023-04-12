@@ -42,7 +42,11 @@ public static class Init {
         // https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0#enable-cors-with-endpoint-routing
         builder.Services.AddCors(options => {
             options.AddPolicy(MyCorsSettings, policy => {
-                policy.WithOrigins("https://localhost:7036"); // allowed origins
+                if (builder.Environment.IsDevelopment()) {
+                    policy.WithOrigins("https://localhost:7036");
+                    policy.WithOrigins("http://127.0.0.1:5500");
+                }
+                policy.WithOrigins("https://sanderwassenberg.hbo-ict.org");
                 policy.WithHeaders("Content-Type"); // allowed headers.
             });
         });
@@ -88,12 +92,12 @@ public static class Init {
         return r;
     }
 
-    public static void init_app(WebApplication app) {
+    public static async Task init_app(WebApplication app) {
 
         bool is_development = app.Environment.IsDevelopment();
         app.Logger.LogInformation("is development: {}", is_development);
 
-        SeedData.Initialize(app.Services).Wait();
+        await SeedData.Initialize(app.Services);
 
         if (!is_development) {
             app.UseExceptionHandler(new ExceptionHandlerOptions {

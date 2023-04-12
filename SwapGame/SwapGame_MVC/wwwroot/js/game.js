@@ -2,16 +2,15 @@ import { Array2D } from "./util.js"
 
 const c = (x,y) => ({x, y});
 class PieceType {
-    name; href; valid_moves;
-    constructor(name, href, valid_moves) {
+    name; valid_moves;
+    constructor(name, valid_moves) {
         this.name = name;
-        this.href = href;
         this.valid_moves = valid_moves;
     }
 
-    static Cross  = new PieceType("cross",  "#piece_cross",  [c(1, 1), c(-1, 1), c(1, -1), c(-1, -1)] );
-    static Plus   = new PieceType("plus",   "#piece_plus",   [c(0, 1), c(0, -1), c(1, 0),  c(-1, 0)] );
-    static Circle = new PieceType("circle", "#piece_circle", [c(0, 2), c(0, -2), c(2, 0),  c(-2, 0)] );
+    static Cross  = new PieceType("cross",  [c(1, 1), c(-1, 1), c(1, -1), c(-1, -1)] );
+    static Plus   = new PieceType("plus",   [c(0, 1), c(0, -1), c(1, 0),  c(-1, 0)] );
+    static Circle = new PieceType("circle", [c(0, 2), c(0, -2), c(2, 0),  c(-2, 0)] );
 }
 
 class Piece {

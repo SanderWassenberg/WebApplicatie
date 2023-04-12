@@ -32,7 +32,10 @@ const remove_all_children = e => {
     while (e.lastChild) e.lastChild.remove()
 }
 
-const api_path = (location.hostname === "localhost" ? "https://localhost:7110" : location.origin) + "/api";
+function is_localhost(hostname) {
+    return hostname === "localhost" || hostname === "127.0.0.1";
+}
+const api_path = (is_localhost(location.hostname) ? "https://localhost:7110" : location.origin) + "/api";
 
 console.log("using API path", api_path)
 
@@ -67,4 +70,51 @@ function hide_if_empty(ul) {
     }
 }
 
-export { Template, Array2D, remove_all_children, api_path, api_post, set_ul_content}
+function bind_inner_text(binding, value) {
+    const elems = document.querySelectorAll(`[data-bind=${binding}]`);
+    for (let i = 0; i < elems.length; i++) {
+        elems[i].innerText = value;
+    }
+}
+
+async function get_error_messages_from_response(response, result_specific_action) {
+
+	const response_body = await response.text();
+
+	if (response.status >= 500) {
+		console.error(response.status, response_body)
+		return `(${response.status}) Server side error.`;
+	}
+	
+	if (response.status !== 400) {
+		console.error(response.status, response_body)
+		return `(${response.status}) Unexpected server response status.`;
+	}
+	
+	let result;
+	try {
+		result = JSON.parse(response_body)
+	} catch (e) {
+		console.error(response.status, response_body)
+		return `(${response.status}) Failed to parse server response.`
+	}
+	
+	const error_value = result_specific_action(result);
+
+	if (error_value)
+		return error_value;
+
+	console.error(response.status, response_body)
+	return `(${response.status}) Something went wrong, but couldn't figure out what`
+}
+
+export { 
+    Template, 
+    Array2D, 
+    remove_all_children, 
+    api_path, 
+    api_post, 
+    set_ul_content, 
+    bind_inner_text, 
+    get_error_messages_from_response,
+}

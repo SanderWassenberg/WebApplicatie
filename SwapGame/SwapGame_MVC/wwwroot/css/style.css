@@ -190,7 +190,14 @@ swapgame-board {
     height: 100%;
     aspect-ratio: 1/1;
 }
-
+.welcome-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 50px;
+    text-align: center;
+}
 .login-area {
     width:min(80%, 400px);
     display:flex;
@@ -209,12 +216,13 @@ swapgame-board {
     background-color: var(--bg-color-secondary);
     padding: 10px;
 }
-.signup-area__errors {
+
+.signup-area__errors, .login-area__errors {
     margin-left: 20px;
     color: var(--font-color-error);
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"], input[type="password"], input[type="email"] {
     background: var(--bg-textbox);
     color: var(--font-color);
     padding: 5px;

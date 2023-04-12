@@ -21,19 +21,28 @@ class Tile extends HTMLElement {
         this.#svg = this.querySelector("svg");
         this.addEventListener("click", e => this.#manager.click(this, e))
         
-        this.piece = piece; // must set AFTER initializing #use and #svg
+        this.set_piece(piece); // must set AFTER initializing #use and #svg
+    }
+
+    static get_href(piece_name) {
+        switch(piece_name) {
+            case "circle": return "#piece_circle";
+            case "cross":  return "#piece_cross";
+            case "plus":   return "#piece_plus";
+            default:       return "";
+        }
     }
 
     get piece() { return this.#__piece; }
-    set piece(piece) {
+    set_piece(piece) {
         this.#__piece = piece;
-        this.#use.setAttribute("href", piece?.type.href)
+        this.#use.setAttribute("href", Tile.get_href(piece?.type.name))
         this.#svg.setAttribute("stroke", ["var(--side-0-color)", "var(--side-1-color)"][piece?.side ?? 0])
     }
 
-    get is_selected() { return this.classList.contains("selected") }
-    set is_selected(v) { this.classList[v ? "add" : "remove"]("selected") }
-    get is_highlighted() { return this.classList.contains("highlighted") }
+    get is_selected()     { return this.classList.contains("selected") }
+    set is_selected(v)    { this.classList[v ? "add" : "remove"]("selected") }
+    get is_highlighted()  { return this.classList.contains("highlighted") }
     set is_highlighted(v) { this.classList[v ? "add" : "remove"]("highlighted") }
 }
 
@@ -73,7 +82,7 @@ class SwapGame_VisualsManager extends HTMLElement {
         }
 
         game.add_update_callback((x,y) => {
-            this.#tiles.get(x,y).piece = game.get(x,y)
+            this.#tiles.get(x,y).set_piece(game.get(x,y))
         })
     }
 
