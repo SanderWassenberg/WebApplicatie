@@ -32,9 +32,8 @@ const remove_all_children = e => {
     while (e.lastChild) e.lastChild.remove()
 }
 
-function is_localhost(hostname) {
-    return hostname === "localhost" || hostname === "127.0.0.1";
-}
+const is_localhost = hostname => hostname === "localhost" || hostname === "127.0.0.1";
+
 const api_path = (is_localhost(location.hostname) ? "https://localhost:7110" : location.origin) + "/api";
 
 console.log("using API path", api_path)
@@ -45,7 +44,7 @@ const api_post = async (path, data) => fetch(api_path + path, {
     body: JSON.stringify((data instanceof FormData) ? Object.fromEntries(data) : data),
 });
 
-function set_ul_content(ul, item_or_arr) {
+const set_ul_content = (ul, item_or_arr) => {
     remove_all_children(ul)
     if (item_or_arr) {
         if (item_or_arr instanceof Array) {
@@ -62,7 +61,8 @@ function set_ul_content(ul, item_or_arr) {
     }
     hide_if_empty(ul)
 }
-function hide_if_empty(ul) {
+
+const hide_if_empty = ul => {
     if (ul.childElementCount > 0) {
         ul.classList.remove("hide")
     } else {
@@ -70,14 +70,14 @@ function hide_if_empty(ul) {
     }
 }
 
-function bind_inner_text(binding, value) {
+const bind_inner_text = (binding, value) => {
     const elems = document.querySelectorAll(`[data-bind=${binding}]`);
     for (let i = 0; i < elems.length; i++) {
         elems[i].innerText = value;
     }
 }
 
-async function get_error_messages_from_response(response, result_specific_action) {
+const get_error_messages_from_response = async(response, result_specific_action) => {
 
 	const response_body = await response.text();
 

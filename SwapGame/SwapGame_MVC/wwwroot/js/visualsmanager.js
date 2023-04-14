@@ -1,13 +1,13 @@
 import { Template, Array2D, remove_all_children } from "./util.js"
 
 class Tile extends HTMLElement {
+    static #make_body = Template.new('<svg viewBox="-5 -5 110 110"><use href=""></use></svg>')
+    static { customElements.define('swapgame-tile', Tile); }
+
     x; y;
     #use; #svg;
     #manager;
     #__piece;
-
-    static { customElements.define('swapgame-tile', Tile); }
-    static #make_body = Template.new('<svg viewBox="-5 -5 110 110"><use href=""></use></svg>')
 
     constructor(manager, x, y, piece) {
         super()
@@ -47,18 +47,18 @@ class Tile extends HTMLElement {
 }
 
 class SwapGame_VisualsManager extends HTMLElement {
+    static #make_body = Template.new(
+`<div class="width-limits-the-height center-content">
+    <div class="square-from-height center-content">
+        <div class="grid"></div>
+    </div>
+</div>`)
+
+    static { customElements.define("swapgame-board", SwapGame_VisualsManager) }
+
     #game;
     #tiles;
     #grid
-
-    static #make_body = Template.new(`
-    <div class="width-limits-the-height center-content">
-        <div class="square-from-height center-content">
-            <div class="grid"></div>
-        </div>
-    </div>`)
-
-    static { customElements.define("swapgame-board", SwapGame_VisualsManager); }
 
     constructor() {
         super();

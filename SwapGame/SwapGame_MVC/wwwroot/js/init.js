@@ -3,8 +3,6 @@ import {SwapGame, Piece, PieceType} from "./game.js"
 import {api_post, set_ul_content, bind_inner_text, get_error_messages_from_response} from "./util.js"
 import "./visualsmanager.js" // required for attaching the game to the visuals.
 
-
-
 class Page {
 	
 	static main = document.querySelector("main");
