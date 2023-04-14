@@ -6,10 +6,8 @@ using Microsoft.Extensions.Options;
 namespace SwapGame_API.endpoints;
 
 public struct LoginData {
-    public string Name { get; set; }
+    public string UserName { get; set; }
     public string Password { get; set; }
-
-
 }
 
 public struct LoginResponse {
@@ -30,7 +28,7 @@ public static partial class Endpoints {
     ) {
         //var logger = lf.CreateLogger("request_token");
 
-        var user = signin_manager.UserManager.Users.SingleOrDefault(u => u.UserName == login.Name);
+        var user = signin_manager.UserManager.Users.SingleOrDefault(u => u.UserName == login.UserName);
         if (user is null)
             return Results.BadRequest(new LoginResponse { error_message = "No such user." });
 

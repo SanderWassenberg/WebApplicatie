@@ -1,5 +1,6 @@
+import {Captcha} from "./captcha.js"
 import {SwapGame, Piece, PieceType} from "./game.js"
-import {api_post, set_ul_content, bind_inner_text} from "./util.js"
+import {api_post, set_ul_content, bind_inner_text, get_error_messages_from_response} from "./util.js"
 import "./visualsmanager.js" // required for attaching the game to the visuals.
 
 
@@ -138,19 +139,30 @@ document.querySelector("#test_button").addEventListener("click", async e => {
 {
 	const form   = document.querySelector("#signup-form");
 	const submit_btn = form.querySelector("input[type='submit']");
-	const error_list = form.querySelector(".signup-area__errors")
+	const error_list = form.querySelector(".signup-area__errors");
+	const captcha    = form.querySelector(Captcha.tag_name);
+
+	captcha.onsubmit = () => submit_btn.click();
 
 	const signup_submit_event = async e => {
 		e.preventDefault();
+
+		const is_human = captcha.verify()
+		if (!is_human) {
+			captcha.focus();
+			return;
+		}
 
 		const data = new FormData(form);
 
 		const pw_match = data.get("Password") === data.get("ConfirmPassword")
 
-		// This may seem weird, but it's important to still call with undefined, to empty the list
-		set_ul_content(error_list, pw_match ? undefined : "Passwords do not match.") 
+		if (!pw_match) {
+			set_ul_content(error_list, "Passwords do not match.") 
+			return; 
+		}
 
-		if (!pw_match) return;
+		set_ul_content(error_list) // clear errors upon submitting
 
 		data.delete("ConfirmPassword")
 
@@ -171,7 +183,7 @@ document.querySelector("#test_button").addEventListener("click", async e => {
 			Page.redirect("login")
 			return
 		}
-		
+
 		let errors = await get_error_messages_from_response(response, result => {
 			if (result.identity_errors) return result.identity_errors.map(o => o.description)
 			if (result.error_message)   return result.error_message
@@ -194,6 +206,7 @@ document.querySelector("#test_button").addEventListener("click", async e => {
 		const data = new FormData(form);
 
 		submit_btn.disabled = true;
+
 		let response;
 		try {
 			response = await api_post('/login', data);

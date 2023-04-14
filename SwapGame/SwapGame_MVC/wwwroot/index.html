@@ -68,7 +68,7 @@
                 <h1>Login</h1>
                 <form class="basic" id="login-form">  
                     <div><label>Name
-                        <input required type="text" name="Name">
+                        <input required type="text" name="UserName">
                     </label></div>
 
                     <div><label>Password
@@ -89,9 +89,10 @@
 
             <section data-page="signup" class="signup-area hide">
                 <h1>Sign up</h1>
-                <form class="basic" id="signup-form">  
+                <form class="basic" id="signup-form" method="dialog">
+                    
                     <div><label>Name
-                        <input required type="text" name="Name">
+                        <input required type="text" name="UserName">
                     </label></div>
 
                     <div><label>Email
@@ -109,8 +110,10 @@
                     <ul class="signup-area__errors hide">
                     </ul>
 
+                    <sg-captcha></sg-captcha>
+
                     <div><label>
-                        <input class="button" type="submit" class="button" value="Create account">
+                        <input class="button" type="submit" value="Create account">
                     </label></div>
                 </form>
 

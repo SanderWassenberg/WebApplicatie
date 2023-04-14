@@ -1,0 +1,10 @@
+p {
+    color: var(--font-color-error);
+    margin: 0 0 4px 0;
+}
+
+input[type='text'] {
+    background-color: var(--bg-textbox);
+    color: var(--font-color);
+    border: solid 1px var(--bg-color-secondary-detail);
+}

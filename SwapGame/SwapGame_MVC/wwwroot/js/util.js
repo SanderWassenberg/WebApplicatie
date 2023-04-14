@@ -108,6 +108,11 @@ async function get_error_messages_from_response(response, result_specific_action
 	return `(${response.status}) Something went wrong, but couldn't figure out what`
 }
 
+const random_in_range = (min, max) => {
+    const diff = max - min
+    return Math.random() * diff + min;
+}
+
 export { 
     Template, 
     Array2D, 
@@ -117,4 +122,5 @@ export {
     set_ul_content, 
     bind_inner_text, 
     get_error_messages_from_response,
+    random_in_range,
 }

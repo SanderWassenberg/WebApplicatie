@@ -6,13 +6,13 @@ using Microsoft.Extensions.Options;
 namespace SwapGame_API.endpoints;
 
 public struct SignupData {
-    public string Name { get; set; }
+    public string UserName { get; set; }
     public string Password { get; set; }
     public string Email { get; set; }
     // ! Must update complete() when adding new fields !
 
     public bool complete() =>
-        !string.IsNullOrEmpty(this.Name) &&
+        !string.IsNullOrEmpty(this.UserName) &&
         !string.IsNullOrEmpty(this.Password) &&
         !string.IsNullOrEmpty(this.Email);
 }
@@ -41,7 +41,7 @@ public static partial class Endpoints {
             return Results.BadRequest(new SignupResponse { error_message = "Invalid email." });
         }
 
-        var user = new SwapGameUser(signup.Name) { Email = signup.Email };
+        var user = new SwapGameUser(signup.UserName) { Email = signup.Email };
         var user_creation_result = await user_manager.CreateAsync(user, signup.Password);
 
         if (!user_creation_result.Succeeded) {
